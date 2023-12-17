@@ -58,13 +58,15 @@ Route::post('/refer/player',[GameManagerController::class,'ReferCode']);
 
 Route::get('/check/app/version',[GameManagerController::class,'AppVersion']);
 
-Route::get('/tournament/details',[TournamentController::class,'findTournamentDetails']);
+Route::post('/tournament/details',[TournamentController::class,'findTournamentDetails']);
 
 Route::post('/tournament/enroll',[TournamentController::class,'enrollPlayerInTable']);
 
-Route::get('/tournament/torunamentsget',[TournamentController::class,'findTournamentonly']);
+Route::get('/tournament/onlytournament',[TournamentController::class,'findTournamentonly']);
 
 Route::get('/tournament/alltournaments',[TournamentController::class,'findallTournaments']);
+
+Route::delete('/tournament/delete', [TournamentController::class, 'deleteTournamentDetails']);
 
 // This route is for payment initiate page
 

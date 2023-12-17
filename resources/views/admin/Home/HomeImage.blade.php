@@ -121,7 +121,7 @@
                                         </div>
                                         <div class="col-md-6">
                                             <div class="favicon ml-5"><img
-                                                    src="{{ url('/') }}/storage/Brand/{{ $homedetails->bannerimg }}"
+                                                    src="/storage/images/banner.png"
                                                     width="300"></div>
                                         </div>
                                     </div>

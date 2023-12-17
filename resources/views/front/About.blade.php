@@ -44,7 +44,7 @@ $home = DB::table('homedetails')->first();
         <nav class="navbar navbar-expand-lg fixed-top bg-transparent">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}" style="height:45px;">
-                    <img src="{{ url('/') }}/storage/Brand/{{ $web->head_logo }}" alt="logo" width="80"
+                    <img src="/storage/images/banner.png" alt="logo" width="80"
                         class="img-fluid" style="margin-top:-17px;" />
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse"

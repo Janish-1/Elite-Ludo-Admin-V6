@@ -20,11 +20,21 @@ class TournamentController extends Controller
     // Specify that 'id' is auto-incrementing integer type
     public $incrementing = true;
 
-    public function index()
-    {
-        $data = Tournament::latest()->paginate(10);
-        return view("admin.Tournament.Tournament", compact('data'));
+public function index()
+{
+    $tournaments = Tournament::latest()->paginate(10);
+
+    foreach ($tournaments as $tournament) {
+        $tournamentId = $tournament->tournament_id;
+
+        $tables['1v1'] = TournamentTable::where('tournament_id', $tournamentId)->get();
+        $tables['1v3'] = TournamentTablemulti::where('tournament_id', $tournamentId)->get();
+
+        $tournament->tables = $tables;
     }
+
+    return view("admin.Tournament.Tournament", compact('tournaments'));
+}
 
     public function AddTournament()
     {
@@ -78,7 +88,7 @@ class TournamentController extends Controller
             'tournaments' => $tournaments,
         ], 200);
     }
-    
+
     public function findTournamentDetails(Request $request)
     {
         $tournamentId = $request->input('tournament_id');
@@ -191,5 +201,25 @@ class TournamentController extends Controller
         }
 
         return response()->json(['success' => 'Player enrolled in table successfully.'], 200);
+    }
+    
+    public function deleteTournamentDetails(Request $request)
+    {
+        $tournamentId = $request->input('tournament_id');
+    
+        $tournament = Tournament::where('tournament_id', $tournamentId)->first();
+    
+        if ($tournament) {
+            // Delete associated tables
+            TournamentTable::where('tournament_id', $tournamentId)->delete();
+            TournamentTablemulti::where('tournament_id', $tournamentId)->delete();
+    
+            // Delete tournament
+            $tournament->delete();
+    
+            return redirect('https://ludo.pujanpaath.com/admin/tournament')->with('success', 'Tournament and associated tables deleted successfully.');
+        } else {
+            return response()->json(['error' => 'Tournament not found.'], 404);
+        }
     }
 }

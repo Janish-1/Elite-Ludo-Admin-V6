@@ -27,7 +27,7 @@ $home = DB::table('homedetails')->first();
     <!--preloader start-->
     <div id="preloader">
         <div class="preloader-wrap">
-            <img src="{{ url('/') }}/storage/Brand/{{ $web->head_logo }}" alt="logo" width="80"
+            <img src="https://i.ibb.co/zbBnZ3t/logo.png" alt="logo" width="80"
                 class="img-fluid" />
             <div class="thecube">
                 <div class="cube c1"></div>
@@ -44,8 +44,8 @@ $home = DB::table('homedetails')->first();
         <nav class="navbar navbar-expand-lg fixed-top bg-transparent">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}" style="height:45px;">
-                    <img src="{{ url('/') }}/storage/Brand/{{ $web->head_logo }}" alt="logo" width="80"
-                        class="img-fluid" style="margin-top:-17px;" />
+                    <img src="https://i.ibb.co/zbBnZ3t/logo.png" alt="logo" height="60px" width="160px"
+                        class="" style="margin-top:1px;" />
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse"
                     data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
@@ -88,7 +88,7 @@ $home = DB::table('homedetails')->first();
                                 <a href="{{ url('/') }}/storage/Brand/{{ $home->download_link }}"
                                     class="btn btn-brand-03 btn-rounded mr-3">Download Now <i
                                         class="fas fa-cloud-download-alt pl-2"></i></a>
-                                <a href="{{ $home->contact_video }}"
+                                <a href=""
                                     class="popup-youtube btn btn-white btn-circle btn-icon"><i
                                         class="fas fa-play"></i> </a> <span class="pl-2"> Watch Now</span>
                             </div>
@@ -136,7 +136,7 @@ $home = DB::table('homedetails')->first();
                     </div>
                     <div class="col-md-6 col-sm-6 col-lg-5">
                         <div class="img-wrap">
-                            <img src="{{ url('/') }}/storage/Brand/{{ $home->bannerimg }}" alt="app image"
+                            <img src="https://i.ibb.co/DCtCpfF/banner.png" alt="app image"
                                 class="img-fluid">
                         </div>
                     </div>
@@ -258,7 +258,7 @@ $home = DB::table('homedetails')->first();
                         </div>
                         <div class="col-sm-5 col-md-5 col-lg-4">
                             <div class="about-content-right">
-                                <img src="{{ url('/') }}/storage/Brand/{{ $home->about_img }}" alt="about us"
+                                <img src="https://i.ibb.co/DCtCpfF/banner.png" alt="about us"
                                     class="img-fluid">
                             </div>
                         </div>
@@ -348,7 +348,7 @@ $home = DB::table('homedetails')->first();
                     <div class="col-lg-4 col-md-5 d-none d-sm-none d-md-block d-lg-block">
                         <div class="position-relative pb-md-5 py-lg-0">
                             <img alt="Image placeholder"
-                                src="{{ url('/') }}/storage/Brand/{{ $home->download_image }}"
+                                src="https://i.ibb.co/gZrFGqG/ss6.png"
                                 class="img-center img-fluid">
                         </div>
                     </div>
@@ -409,7 +409,7 @@ $home = DB::table('homedetails')->first();
                     @endphp
                     <div class="screen-carousel owl-carousel owl-theme dot-indicator">
                         @foreach ($screenshot as $result)
-                            <img src="{{ url('/') }}/storage/Screenshot/{{ $result->screenshot }}"
+                            <img src="{{ $result->screenshot }}"
                                 class="img-fluid screenshot_slider_image" alt="screenshots" />
                         @endforeach
                     </div>
@@ -472,7 +472,7 @@ $home = DB::table('homedetails')->first();
                 <div class="row align-items-center">
                     <div class="col-md-12 col-lg-6 mb-5 mb-md-5 mb-sm-5 mb-lg-0">
                         <div class="img-wrap">
-                            <img src="{{ url('/') }}/storage/Brand/{{ $home->contact_image }}" alt="download"
+                            <img src="https://i.ibb.co/DCtCpfF/banner.png" alt="download"
                                 class="img-fluid">
                         </div>
                     </div>
@@ -524,8 +524,8 @@ $home = DB::table('homedetails')->first();
                                         <div class="testimonial-quote-wrap">
                                             <div class="media author-info mb-3">
                                                 <div class="author-img mr-3">
-                                                    <img src="{{ url('/') }}/storage/Testimonial/{{ $result->profile_image }}"
-                                                        alt="client" class="img-fluid">
+                                                    <img src="{{ $result->profile_image }}"
+                                                        alt="client" class="" width="85px" height="120px">
                                                 </div>
                                                 <div class="media-body text-white">
                                                     <h5 class="mb-0 text-white">{{ $result->username }}</h5>
