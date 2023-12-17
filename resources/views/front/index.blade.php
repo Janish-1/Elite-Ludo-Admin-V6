@@ -489,7 +489,7 @@ $home = DB::table('homedetails')->first();
                                         <h6 class="mb-0 d-inline-block">{{ $result->faq_title }}</h6>
                                     </a>
                                     <div id="collapse{{ $result->id }}" class="collapse"
-                                        data-parent="#accordion" style="">
+                                        data-parent="#accordion">
                                         <div class="card-body white-bg">
                                             <p>{{ $result->faq_desc }}</p>
                                         </div>
