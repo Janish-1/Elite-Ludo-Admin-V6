@@ -27,7 +27,7 @@ $home = DB::table('homedetails')->first();
     <!--preloader start-->
     <div id="preloader">
         <div class="preloader-wrap">
-            <img src="https://i.ibb.co/zbBnZ3t/logo.png" alt="logo" width="80"
+            <img src="https://i.ibb.co/X2V26G9/logo-removebg-preview.png" alt="logo" width="80"
                 class="img-fluid" />
             <div class="thecube">
                 <div class="cube c1"></div>
@@ -44,7 +44,7 @@ $home = DB::table('homedetails')->first();
         <nav class="navbar navbar-expand-lg fixed-top bg-transparent">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}" style="height:45px;">
-                    <img src="https://i.ibb.co/zbBnZ3t/logo.png" alt="logo" height="60px" width="160px"
+                    <img src="https://i.ibb.co/X2V26G9/logo-removebg-preview.png" alt="logo" height="60px" width="160px"
                         class="" style="margin-top:1px;" />
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse"
@@ -697,8 +697,10 @@ $home = DB::table('homedetails')->first();
                             target="_blank"><i class="fab fa-youtube"></i></a></li>
                     <li class="list-inline-item"><a class="linkedin" href="{{ $web->linkedin }}"
                             target="_blank"><i class="fab fa-linkedin-in"></i></a></li>
-                    <li class="list-inline-item"><a class="dribbble" href="{{ $web->instagram }}"
+                    <li class="list-inline-item"><a class="dribbble" href="https://www.instagram.com/boomlly.com_?igshid=OGQ5ZDc2ODk2ZA=="
                             target="_blank"><i class="fab fa-instagram"></i></a></li>
+                    <li class="list-inline-item"><a class="dribbble" href="https://whatsapp.com/channel/0029Va4ydTgAojYnH5E1VQ3U"
+                            target="_blank"><i class="fab fa-whatsapp"></i></a></li>
                 </div>
                 <!--foote_bottom_ul_amrc ends here-->
                 <p class="text-center">{{ $web->copyright }}</p>
