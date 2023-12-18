@@ -3150,6 +3150,7 @@ table {
   transition: opacity .3s linear;
   -webkit-transition: opacity .3s linear;
   opacity: 0;
+  background: linear-gradient(75deg, #1f3f72, #0a2538) !important;
 }
 
 /* line 15, src/assets/scss/objects/_objects.background-image.scss */
@@ -3200,7 +3201,7 @@ table {
 [image-overlay]:before {
   position: absolute;
   content: '';
-  background-color: #8e1a1b;
+  background-color: #152949;
   width: 100%;
   height: 100%;
   top: 0;
@@ -3208,8 +3209,7 @@ table {
   z-index: 1;
 }
 .this_is_cusrtom{
-    background-color: #8e1a1b !important;
-}
+  background: linear-gradient(75deg, #152949, #05141F) !important;}
 
 /* line 60, src/assets/scss/objects/_objects.background-image.scss */
 [data-overlay-top] {
@@ -3268,9 +3268,11 @@ table {
 [data-overlay-gradient]:before {
   position: absolute;
   content: '';
-  background: #511110;
-  background: -webkit-gradient(linear, left top, right top, color-stop(5%, #511110), color-stop(95%, #511110)) !important;
-  background: linear-gradient(to right, #511110 5%, #511110 95%) !important;
+  /* Solid blue background */
+  background: #0a2e4e;
+  /* Blue to dark blue gradient */
+  background: -webkit-gradient(linear, left top, right top, color-stop(5%, #0a2e4e), color-stop(95%, #05141f)) !important;
+  background: linear-gradient(to right, #0a2e4e 5%, #05141f 95%) !important;
   width: 100%;
   height: 100%;
   top: 0;
@@ -3348,6 +3350,7 @@ table {
   width: 100%;
   height: 100%;
   z-index: 1;
+  background: linear-gradient(75deg, #05141F, #152949) !important;
 }
 
 /* line 213, src/assets/scss/objects/_objects.background-image.scss */
@@ -3363,44 +3366,36 @@ table {
   background-size: cover;
 }
 
-/* line 1, src/assets/scss/objects/_objects.background.scss */
 .color-primary {
-  color: #511110 !important;
+  color: #0A2E4E !important;
 }
 
-/* line 4, src/assets/scss/objects/_objects.background.scss */
 .color-secondary {
-  color: #511110 !important;
+  color: #0A2E4E !important;
 }
 
-/* line 7, src/assets/scss/objects/_objects.background.scss */
 .color-accent {
-  color: #8e1a1b !important;
+  color: #152949 !important;
 }
 
-/* line 10, src/assets/scss/objects/_objects.background.scss */
 .gray-light-bg {
   background: #f5f5f5 !important;
 }
 
-/* line 14, src/assets/scss/objects/_objects.background.scss */
 .primary-bg {
-  background: #511110 !important;
+  background: #0A2E4E !important;
 }
 
-/* line 17, src/assets/scss/objects/_objects.background.scss */
 .secondary-bg {
-  background: #511110 !important;
+  background: #0A2E4E !important;
 }
 
-/* line 20, src/assets/scss/objects/_objects.background.scss */
 .accent-bg {
-  background: #8e1a1b !important;
+  background: #152949 !important;
 }
 
-/* line 24, src/assets/scss/objects/_objects.background.scss */
 .gradient-bg {
-  background: linear-gradient(75deg, #8e1a1b, #511110) !important;
+  background: linear-gradient(75deg, #152949, #05141F) !important;
 }
 
 /*!
@@ -16293,6 +16288,7 @@ input[type="button"].btn-block {
   -webkit-box-pack: justify;
       -ms-flex-pack: justify;
           justify-content: space-between;
+  height: 120px;
 }
 
 /* line 52, node_modules/bootstrap/scss/_navbar.scss */
@@ -19658,7 +19654,7 @@ a.close.disabled {
 
 /* line 199, src/assets/scss/components/_components.header.scss */
 .affix {
-  background: linear-gradient(75deg, #8e1a1b, #511110) !important;
+  background: linear-gradient(75deg, #152949, #05141F) !important;
   -webkit-transition: padding 0.4s ease-out;
   transition: padding 0.4s ease-out;
 }
@@ -19680,7 +19676,7 @@ a.close.disabled {
   }
   /* line 219, src/assets/scss/components/_components.header.scss */
   .navbar {
-    background: linear-gradient(75deg, #8e1a1b, #511110) !important;
+    background: linear-gradient(75deg,#05141F, #152949) !important;
     padding: .45rem 1rem !important;
   }
   /* line 223, src/assets/scss/components/_components.header.scss */
@@ -23815,7 +23811,7 @@ tr.register-items-header th {
   left: 20px;
   width: 99%;
   height: 69%;
-  background: #8e1a1b;
+  background: lightcoral;
   -webkit-transform: rotate(-6deg);
   transform: rotate(-6deg);
   z-index: -1;
@@ -23824,7 +23820,7 @@ tr.register-items-header th {
 
 /* line 32, src/assets/scss/components/review-section/_review-1.scss */
 .testimonial-content-wrap .testimonial-shape .testimonial-quote-wrap {
-  background: #511110;
+  background: coral;
   padding: 30px 40px;
   z-index: 4;
   margin-top: 30px;
@@ -24088,7 +24084,7 @@ tr.register-items-header th {
   -webkit-box-shadow: 0 3px 20px 0 rgba(0, 0, 0, 0.12);
   box-shadow: 0 3px 20px 0 rgba(0, 0, 0, 0.12);
   border-radius: 4px 4px 0 0;
-  background: linear-gradient(75deg, #8e1a1b, #511110);
+  background: linear-gradient(75deg,#05141F, #152949);
   margin-bottom: 0;
   border: 1px solid rgba(72, 94, 144, 0.16);
 }

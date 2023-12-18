@@ -7,7 +7,6 @@ $home = DB::table('homedetails')->first();
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <!--favicon icon-->
     <link rel="icon" href="{{ url('/') }}/storage/Brand/{{ $web->favicon }}" type="image/png" sizes="16x16">
@@ -19,7 +18,7 @@ $home = DB::table('homedetails')->first();
         href="{{ URL::asset('admin-assets/fonts/line-awesome/line-awesome.css') }}" />
     <link rel="stylesheet" href="{{ URL::asset('admin-assets/vendors/js/sweet-alert/sweetalert.css') }}">
     <link rel="stylesheet" href="{{ URL::asset('admin-assets/vendors/js/sweet-alert/jquery.sweet-modal.min.css') }}">
-    <link rel="stylesheet" href="{{ URL::asset('front-assets/css/main.css') }}">
+    <link rel="stylesheet" href="{{ URL::asset('front-assets/css/main1.css') }}">
     <!-- endbuild -->
 </head>
 
@@ -691,12 +690,6 @@ $home = DB::table('homedetails')->first();
         <div class="container">
             <center>
                 <div class="list-inline social-list-default background-color social-hover-2 mt-2">
-                    <li class="list-inline-item"><a class="twitter" href="{{ $web->twitter }}"
-                            target="_blank"><i class="fab fa-twitter"></i></a></li>
-                    <li class="list-inline-item"><a class="youtube" href="{{ $web->youtube }}"
-                            target="_blank"><i class="fab fa-youtube"></i></a></li>
-                    <li class="list-inline-item"><a class="linkedin" href="{{ $web->linkedin }}"
-                            target="_blank"><i class="fab fa-linkedin-in"></i></a></li>
                     <li class="list-inline-item"><a class="dribbble" href="https://www.instagram.com/boomlly.com_?igshid=OGQ5ZDc2ODk2ZA=="
                             target="_blank"><i class="fab fa-instagram"></i></a></li>
                     <li class="list-inline-item"><a class="dribbble" href="https://whatsapp.com/channel/0029Va4ydTgAojYnH5E1VQ3U"
