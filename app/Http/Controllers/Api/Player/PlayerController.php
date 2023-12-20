@@ -146,38 +146,27 @@ class PlayerController extends Controller
 
     //now check mobile regisyter user
 
-    public function MobileCheck(Request $request)
-    {
-        $checkmobile = Userdata::where('userphone', $request->mobilenumber)->first();
-        if ($checkmobile['banned'] == 0) {
-            $response = ['message' => 'User Banned'];
-            return response($response, 200);
-        } else {
-            $checkmobile = Userdata::where('userphone', $request->mobilenumber)->first();
-            if ($checkmobile != "") {
-                $deviceid = Userdata::where('device_token', $request->device_token)->first();
-                if ($deviceid != "") {
-                    $CheckBoth = Userdata::where('userphone', $request->mobilenumber)->where('device_token', $request->device_token)->first();
-                    if ($CheckBoth != "") {
-                        $response = ['message' => 'User Already Exists !', 'playerid' => $CheckBoth['playerid']];
-                        return response($response, 200);
-                    } else {
-                        $response = ['message' => 'User Used Diffrent Device'];
-                        return response($response, 200);
-                    }
-                } else {
-                    $response = ['message' => 'User Used Diffrent Device'];
-                    return response($response, 200);
-                }
-                $response = ['message' => 'User Already Exist !', 'playerid' => $checkmobile['playerid']];
-                return response($response, 200);
-            } else {
-                $response = ['message' => 'User Not Exist !'];
-                return response($response, 200);
-            }
-        }
-    }
+public function MobileCheck(Request $request)
+{
+    $checkMobile = Userdata::where('userphone', $request->mobilenumber)->first();
 
+    if ($checkMobile) {
+        $response = [
+            'message' => 'User Found',
+            'playerid' => $checkMobile['playerid'] ?? null, // Get playerid or set to null if not found
+            'success' => true // Boolean value indicating success
+        ];
+        return response($response, 200);
+    } else {
+        $response = [
+            'message' => 'User Not Found',
+            'success' => false // Boolean value indicating failure
+        ];
+        return response($response, 404);
+    }
+}
+
+    
 
     public function MobileRegister(Request $request)
     {

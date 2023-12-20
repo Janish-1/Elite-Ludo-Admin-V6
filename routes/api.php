@@ -68,6 +68,8 @@ Route::get('/tournament/alltournaments',[TournamentController::class,'findallTou
 
 Route::delete('/tournament/delete', [TournamentController::class, 'deleteTournamentDetails']);
 
+Route::delete('/delete/all/players', [PlayerController::class, 'DeleteAllPlayers'])->name('delete.all.players');
+
 // This route is for payment initiate page
 
 Route::get('/razorpay/payment',[RazorpayController::class,'Initiate']);

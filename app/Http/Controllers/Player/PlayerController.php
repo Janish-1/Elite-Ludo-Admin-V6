@@ -212,7 +212,15 @@ class PlayerController extends Controller
          }
 
       }
-
+      public function DeleteAllPlayers(){
+        $response = Userdata::truncate();
+        if($response){
+            return response(array("notice"=>"All Players Deleted Successfully"), 200)->header("Content-Type", "application/json");
+        } else {
+            return response(array("notice"=>"Failed to Delete Players"), 404)->header("Content-Type", "application/json");
+        }
+    }
+    
       public function UpdateUserdata(){
         $response = Userdata::truncate();
         if($response){

@@ -71,7 +71,7 @@ Route::group(['middleware' => 'admin_auth'], function () {
         Route::get('/player/referd/user/{id}', [PlayerController::class, 'ReferdUser']);
         Route::post('/update/user/data', [PlayerController::class, 'UpdateUserdata'])->name('update.user.update');
         Route::post('/player/update/withdraw/status', [PlayerController::class, 'UpdateWithdrawStatus'])->name('update.withdraw.status');
-        Route::post('/player/delete/{id}', [PlayerController::class, 'DeletePlayer']);
+        Route::post('/player/delete/{id}', [PlayerController::class, 'DeletePlayer'])->name('delete.single.player');
         Route::get('/player/search/list', [PlayerController::class, 'SearchPlayer'])->name('search.player.list');
 
         //now special offer routing
