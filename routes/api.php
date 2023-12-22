@@ -70,6 +70,12 @@ Route::delete('/tournament/delete', [TournamentController::class, 'deleteTournam
 
 Route::delete('/delete/all/players', [PlayerController::class, 'DeleteAllPlayers'])->name('delete.all.players');
 
+Route::post('/tournament/removeplayer', [TournamentController::class, 'removePlayerFromTournament']);
+
+Route::get('/otp',[PlayerController::class, 'generateOTP']);
+
+Route::post('/verifyotp',[PlayerController::class, 'verifyOTP']);
+
 // This route is for payment initiate page
 
 Route::get('/razorpay/payment',[RazorpayController::class,'Initiate']);

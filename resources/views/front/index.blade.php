@@ -9,7 +9,7 @@ $home = DB::table('homedetails')->first();
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <!--favicon icon-->
-    <link rel="icon" href="{{ url('/') }}/storage/Brand/{{ $web->favicon }}" type="image/png" sizes="16x16">
+    <link rel="icon" href="https://i.ibb.co/X2V26G9/logo-removebg-preview.png" type="image/png" sizes="16x16">
     <!--title-->
     <title>{{ $web->website_tagline }}</title>
     <!--build:css-->

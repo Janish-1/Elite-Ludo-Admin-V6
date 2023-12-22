@@ -37,5 +37,8 @@ class Userdata extends Model
            "accountHolder",
            "accountNumber",
            "ifsc",
+           "in_game_status",
+           "tournament_id",
+           "table_id",   
     ];
 }
