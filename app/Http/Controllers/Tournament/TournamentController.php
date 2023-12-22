@@ -9,6 +9,7 @@ use App\Models\Tournament\TournamentTablemulti; // Import the TournamentTable mo
 use App\Models\Player\Userdata;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Response;
 
 class TournamentController extends Controller
 {
@@ -261,73 +262,73 @@ class TournamentController extends Controller
 
         // Check if the player ID is provided
         if (!$playerId) {
-            return response()->json(['error' => 'Player ID is missing.'], 400);
+            return Response::json(['error' => 'Player ID is missing.'], 400);
         }
 
-        // Find the player's data related to a tournament or table
-        $playerData = UserData::where('playerid', $playerId)
-            ->where(function ($query) {
-                $query->whereNotNull('tournament_id')
-                    ->orWhereNotNull('table_id');
-            })
-            ->first();
+        $playerFoundDetails = [];
 
-        if (!$playerData) {
-            return response()->json(['error' => 'Player is not enrolled in any tournament or associated with a table.'], 400);
+        // Find player in TournamentTable
+        $playerInTournamentTable = TournamentTable::where('player_id1', $playerId)
+            ->orWhere('player_id2', $playerId)
+            ->get();
+
+        // Find player in TournamentTablemulti
+        $playerInTournamentTableMulti = TournamentTablemulti::where('player_id1', $playerId)
+            ->orWhere('player_id2', $playerId)
+            ->orWhere('player_id3', $playerId)
+            ->orWhere('player_id4', $playerId)
+            ->get();
+
+        if ($playerInTournamentTable->isNotEmpty()) {
+            $playerFoundDetails['TournamentTable'] = $playerInTournamentTable->toArray();
+            $this->removePlayerFromTable($playerInTournamentTable, $playerId);
         }
 
-        // Get the table ID associated with the player
-        $tableId = $playerData->table_id;
-
-        if ($tableId) {
-            // Find the tournament tables based on the table ID in both TournamentTable and TournamentTablemulti
-            $tournamentTable = TournamentTable::where('table_id', $tableId)->first();
-            $tournamentTableMulti = TournamentTablemulti::where('table_id', $tableId)->first();
-
-            if ($tournamentTable) {
-                // Remove the player from TournamentTable
-                $tournamentTable->update([
-                    'player_id1' => TournamentTable::raw("CASE WHEN player_id1 = $playerId THEN NULL ELSE player_id1 END"),
-                    'player_id2' => TournamentTable::raw("CASE WHEN player_id2 = $playerId THEN NULL ELSE player_id2 END"),
-                    'status' => TournamentTable::raw('CONCAT_WS("/", IF(player_id1 IS NULL, 0, 1), IF(player_id2 IS NULL, 0, 1), IF(player_id3 IS NULL, 0, 1), IF(player_id4 IS NULL, 0, 1))'),
-                ]);
-            }
-
-            if ($tournamentTableMulti) {
-                // Remove the player from TournamentTablemulti
-                $tournamentTableMulti->update([
-                    'player_id1' => TournamentTablemulti::raw("CASE WHEN player_id1 = $playerId THEN NULL ELSE player_id1 END"),
-                    'player_id2' => TournamentTablemulti::raw("CASE WHEN player_id2 = $playerId THEN NULL ELSE player_id2 END"),
-                    'player_id3' => TournamentTablemulti::raw("CASE WHEN player_id3 = $playerId THEN NULL ELSE player_id3 END"),
-                    'player_id4' => TournamentTablemulti::raw("CASE WHEN player_id4 = $playerId THEN NULL ELSE player_id4 END"),
-                    'status' => TournamentTablemulti::raw('CONCAT_WS("/", IF(player_id1 IS NULL, 0, 1), IF(player_id2 IS NULL, 0, 1), IF(player_id3 IS NULL, 0, 1), IF(player_id4 IS NULL, 0, 1))'),
-                ]);
-            }
+        if ($playerInTournamentTableMulti->isNotEmpty()) {
+            $playerFoundDetails['TournamentTablemulti'] = $playerInTournamentTableMulti->toArray();
+            $this->removePlayerFromTable($playerInTournamentTableMulti, $playerId);
         }
 
-        // Reset the player's tournament-related data in UserData
-        $playerData->update([
-            'tournament_id' => null,
-            'table_id' => null,
-            'in_game_status' => false,
-            // Additional fields if needed
-        ]);
+        // You can then output the data in the response
+        $responseData = [
+            'player_id' => $playerId,
+            'player_found_details' => $playerFoundDetails,
+        ];
+        
+        // Update user's status to indicate engagement in a game and set tournament_id and table_id
+        UserData::updateOrCreate(
+            ['playerid' => $playerId],
+            [
+                'in_game_status' => false,
+                'tournament_id' => null,
+                'table_id' => null,
+                // Additional columns to store current_table_id, etc.
+            ]
+        );
 
-        return response()->json(['success' => 'Player removed from tournaments or tables successfully.'], 200);
+        return Response::json(['data' => $responseData], 200);
     }
 
-    // Function to calculate the status of the table based on player IDs
-    private function calculateTableStatus($table)
+    // Function to remove player from a specific table and update status
+    private function removePlayerFromTable($tableData, $playerId)
     {
-        $occupiedCount = 0;
-        $playerFields = ['player_id1', 'player_id2', 'player_id3', 'player_id4'];
+        foreach ($tableData as $tableRow) {
+            $currentStatus = $tableRow->status;
+            $statusArray = explode('/', $currentStatus);
 
-        foreach ($playerFields as $field) {
-            if ($table->$field !== null) {
-                $occupiedCount++;
+            if (count($statusArray) === 2 && is_numeric($statusArray[0])) {
+                $statusArray[0] = max(0, intval($statusArray[0]) - 1); // Decrement the first value by 1
+                $newStatus = implode('/', $statusArray);
+                $tableRow->status = $newStatus;
             }
-        }
 
-        return '0/' . $occupiedCount;
+            foreach ($tableRow->getAttributes() as $columnName => $columnValue) {
+                if (strpos($columnName, 'player_id') !== false && $columnValue == $playerId) {
+                    $tableRow->$columnName = null;
+                }
+            }
+            // Update the status column
+            $tableRow->save();
+        }
     }
 }
