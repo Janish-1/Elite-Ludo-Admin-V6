@@ -10,7 +10,7 @@ use App\Models\Player\Userdata;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class TournamentController extends Controller
 {
@@ -392,14 +392,13 @@ class TournamentController extends Controller
     public function nextround(Request $request)
     {
         $tournamentId = $request->input('tournament_id');
-
+    
         if (!$tournamentId) {
-            return Response::json(['error' => 'No Tournament ID Found'], 400);
+            return response()->json(['error' => 'No Tournament ID Found'], 400);
         }
-
-        $typeoftournament = Tournament::where('tournament_id', $tournamentId)
-            ->get();
-
+    
+        $typeoftournament = Tournament::where('tournament_id', $tournamentId)->get();
+    
         foreach ($typeoftournament as $tournament) {
             $type = $tournament['player_type'];
             $game_type = $tournament['game_type'];
@@ -408,21 +407,23 @@ class TournamentController extends Controller
             $tournament_name = $tournament['tournament_name'];
             $entry_fee = $tournament['entry_fee'];
         }
-
+    
         $winnersArray = []; // Initialize an empty array to store winner data
-
+    
         if ($type === '1v1') {
             // Retrieve winner data for 1v1 tournaments
             $winnersData = TournamentTable::where('tournament_id', $tournamentId)
                 ->whereNotNull('winner') // Filter where winner is not null
                 ->get(['winner']);
-
+    
             $winnersArray = $winnersData->pluck('winner')->toArray();
             $totalnumberofwinners = count($winnersArray);
             $nooftables = $totalnumberofwinners / 2;
-
+    
+            $newTournamentId = $tournamentId . '1'; // Append the string to the tournament ID
+    
             $tournamentData = [
-                "tournament_id" => $tournamentId,
+                "tournament_id" => $newTournamentId,
                 "tournament_name" => $tournament_name,
                 "prize_pool" => $prize_pool,
                 "time_start" => $time_start,
@@ -431,40 +432,11 @@ class TournamentController extends Controller
                 "entry_fee" => $entry_fee,
                 "nooftables" => $nooftables
             ];
-
-            $deleteResponse = Http::delete('http://localhost:8000/api/tournament/delete', [
-                'tournament_id' => $tournamentId
-            ]);
-
-            if ($deleteResponse->successful()) {
-                // Make a POST request to create the tournament
-                $createTournamentResponse = Http::post('http://localhost:8000/api/tournament/createwithid/new', $tournamentData);
-
-                if ($createTournamentResponse->successful()) {
-                    // Assign winners to tables
-                    for ($i = 0; $i < $nooftables; $i++) {
-                        $tableId = $i;
-                        for ($j = 0; $j < 2; $j++) {
-                            // Check if there are available winners
-                            if (isset($winnersArray[$i * 2 + $j])) {
-                                $playerId = $winnersArray[$i * 2 + $j];
-                                $addPlayers = [
-                                    "tournament_id" => $tournamentId,
-                                    "table_id" => $tableId,
-                                    "player_id" => $playerId
-                                ];
-
-                                // Make a POST request to enroll players
-                                $addPlayersResponse = Http::post('http://localhost:8000/api/tournament/enroll', $addPlayers);
-                                // Handle the response as needed...
-                            }
-                        }
-                    }
-                }
-            }
+    
+            $this->CreateTournamentWithTablesAndId($tournamentData);
+            $this->enrollPlayers($newTournamentId, $winnersArray, '1v1');
         }
-
-
+    
         if ($type === '1v3') {
             // Retrieve winner data for 1v3 tournaments
             $winnersData = TournamentTablemulti::where('tournament_id', $tournamentId)
@@ -475,8 +447,10 @@ class TournamentController extends Controller
             $totalnumberofwinners = count($winnersArray);
             $nooftables = $totalnumberofwinners / 4;
 
+            $newTournamentId = $tournamentId . '1'; // Append the string to the tournament ID
+    
             $tournamentData = [
-                "tournament_id" => $tournamentId,
+                "tournament_id" => $newTournamentId,
                 "tournament_name" => $tournament_name,
                 "prize_pool" => $prize_pool,
                 "time_start" => $time_start,
@@ -486,36 +460,8 @@ class TournamentController extends Controller
                 "nooftables" => $nooftables
             ];
 
-            $deleteResponse = Http::delete('http://localhost:8000/api/tournament/delete', [
-                'tournament_id' => $tournamentId
-            ]);
-
-            if ($deleteResponse->successful()) {
-                // Make a POST request to create the tournament
-                $createTournamentResponse = Http::post('http://localhost:8000/api/tournament/createwithid/new', $tournamentData);
-
-                if ($createTournamentResponse->successful()) {
-                    // Assign winners to tables
-                    for ($i = 0; $i < $nooftables; $i++) {
-                        $tableId = $i;
-                        for ($j = 0; $j < 4; $j++) {
-                            // Check if there are available winners
-                            if (isset($winnersArray[$i * 4 + $j])) {
-                                $playerId = $winnersArray[$i * 4 + $j];
-                                $addPlayers = [
-                                    "tournament_id" => $tournamentId,
-                                    "table_id" => $tableId,
-                                    "player_id" => $playerId
-                                ];
-
-                                // Make a POST request to enroll players
-                                $addPlayersResponse = Http::post('http://localhost:8000/api/tournament/enroll', $addPlayers);
-                                // Handle the response as needed...
-                            }
-                        }
-                    }
-                }
-            }
+            $this->CreateTournamentWithTablesAndId($tournamentData);
+            $this->enrollPlayers($tournamentId, $winnersArray, '1v3');
         }
 
         return Response::json([
@@ -524,11 +470,10 @@ class TournamentController extends Controller
         ]);
     }
 
-    public function CreateTournamentWithTablesandid(Request $request)
+    private function CreateTournamentWithTablesAndId($tournamentData)
     {
-        $tournamentData = $request->all();
         $tournamentId = $tournamentData['tournament_id']; // Assuming 'tournament_id' is present in $tournamentData
-        $gameType = $tournamentData['player_type']; // Assuming 'game_type' is present in $tournamentData
+        $gameType = $tournamentData['player_type']; // Assuming 'player_type' is present in $tournamentData
         $numberOfTables = $tournamentData['nooftables'];
 
         $tournament = Tournament::create($tournamentData);
@@ -556,4 +501,72 @@ class TournamentController extends Controller
 
         return response()->json(['success' => 'Tournament and tables created successfully.'], 200);
     }
+
+    private function enrollPlayers($tournamentId, $winnersArray, $type)
+    {
+        // Check if the player ID and tournament ID are provided
+        if (empty($winnersArray) || !$tournamentId) {
+            return response()->json(['error' => 'Player IDs or tournament ID is missing.'], 400);
+        }
+    
+        // Retrieve the tournament instance by ID
+        $tournament = Tournament::where('tournament_id', $tournamentId)->first();
+    
+        if (!$tournament) {
+            return response()->json(['error' => 'Tournament not found.'], 404);
+        }
+    
+        switch ($type) {
+            case '1v1':
+                $tableModel = TournamentTable::class;
+                $totalPlayers = 2;
+                break;
+            case '1v3':
+                $tableModel = TournamentTablemulti::class;
+                $totalPlayers = 4;
+                break;
+            default:
+                return response()->json(['error' => 'Invalid game type for the tournament.'], 400);
+        }
+    
+        foreach ($winnersArray as $playerId) {
+            // Retrieve the table instance by tournament ID and available slots
+            $table = $tableModel::where('tournament_id', $tournamentId)
+                ->where(function ($query) use ($totalPlayers) {
+                    for ($i = 2; $i <= $totalPlayers; $i++) {
+                        $query->orWhereNull("player_id$i");
+                    }
+                })
+                ->first();
+    
+            if (!$table) {
+                return response()->json(['message' => 'All tables are full.'], 200);
+            }
+    
+            // Check available slots and enroll the player accordingly
+            for ($i = 1; $i <= $totalPlayers; $i++) {
+                if (!$table->{"player_id$i"}) {
+                    $table->{"player_id$i"} = $playerId;
+                    $table->status = "$i/$totalPlayers";
+                    break;
+                }
+            }
+    
+            // Update user's status to indicate engagement in a game and set tournament_id and table_id
+            UserData::updateOrCreate(
+                ['playerid' => $playerId],
+                [
+                    'in_game_status' => true,
+                    'tournament_id' => $tournamentId,
+                    'table_id' => $table->table_id,
+                    // Additional columns to store current_table_id, etc.
+                ]
+            );
+    
+            // Save changes to the table instance
+            $table->save();
+        }
+    
+        return response()->json(['success' => 'Players enrolled in tables successfully.'], 200);
+    }    
 }

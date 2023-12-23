@@ -80,7 +80,7 @@ Route::post('/tournament/playerwin', [TournamentController::class, 'playerwin'])
 
 Route::post('/tournament/nextround',[TournamentController::class, 'nextround']);
 
-Route::post('/tournament/createwithid/new', [TournamentController::class, 'CreateTournamentWithTablesandid']);
+Route::post('/tournament/create/new', [TournamentController::class, 'CreateTournamentWithTables']);
 // This route is for payment initiate page
 
 Route::get('/razorpay/payment',[RazorpayController::class,'Initiate']);
