@@ -15,5 +15,6 @@ class TournamentTable extends Model
         "game_name",
         "player_id1",
         "player_id2",
+        "winner",
         ];
 }

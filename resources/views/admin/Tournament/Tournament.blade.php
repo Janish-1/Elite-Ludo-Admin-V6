@@ -104,6 +104,7 @@ All Tournament List
                             <th>Player ID 2</th>
                             <th>Player ID 3</th>
                             <th>Player ID 4</th>
+                            <th>Winner</th>
                             <th>Status</th>
                             <th>Updated At</th>
                             <th>Created At</th>
@@ -122,6 +123,7 @@ All Tournament List
                             <td>{{ $table->player_id2 ?? 'N/A' }}</td>
                             <td>{{ $table->player_id3 ?? 'N/A' }}</td>
                             <td>{{ $table->player_id4 ?? 'N/A' }}</td>
+                            <td>{{ $table->winner ?? 'N/A' }}</td>
                             <td>{{ $table->status }}</td>
                             <td>{{ $table->updated_at }}</td>
                             <td>{{ $table->created_at }}</td>

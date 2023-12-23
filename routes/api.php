@@ -76,6 +76,11 @@ Route::get('/otp',[PlayerController::class, 'generateOTP']);
 
 Route::post('/verifyotp',[PlayerController::class, 'verifyOTP']);
 
+Route::post('/tournament/playerwin', [TournamentController::class, 'playerwin']);
+
+Route::post('/tournament/nextround',[TournamentController::class, 'nextround']);
+
+Route::post('/tournament/createwithid/new', [TournamentController::class, 'CreateTournamentWithTablesandid']);
 // This route is for payment initiate page
 
 Route::get('/razorpay/payment',[RazorpayController::class,'Initiate']);
