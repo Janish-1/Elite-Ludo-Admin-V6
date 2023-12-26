@@ -334,4 +334,29 @@ class PlayerController extends Controller
         otp::where('created_at', '<=', $expiryTime)->delete();
     }
     
+    public function deleteall(Request $request)
+    {
+        try {
+            $deletedRows = Userdata::query()->delete();
+    
+            if ($deletedRows > 0) {
+                return response()->json(['notice' => 'All Players Deleted Successfully'], 200);
+            } else {
+                return response()->json(['notice' => 'No Players Found'], 404);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['notice' => 'Failed to Delete Players'], 500);
+        }
+    }
+    public function DeletePlayer($id)
+    {
+      $response = Userdata::find($id);
+      $response = $response->delete();
+      if ($response) {
+        return response(array("notice" => "Data Delete Success"), 200)->header("Content-Type", "application/json");
+      } else {
+        return response(array("notice" => "Data Not Delete"), 404)->header("Content-Type", "application/json");
+      }
+    }
+  
 }

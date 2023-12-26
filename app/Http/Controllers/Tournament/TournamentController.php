@@ -392,36 +392,45 @@ class TournamentController extends Controller
     public function nextround(Request $request)
     {
         $tournamentId = $request->input('tournament_id');
-    
+        
         if (!$tournamentId) {
             return response()->json(['error' => 'No Tournament ID Found'], 400);
         }
-    
+        
         $typeoftournament = Tournament::where('tournament_id', $tournamentId)->get();
-    
-        foreach ($typeoftournament as $tournament) {
-            $type = $tournament['player_type'];
-            $game_type = $tournament['game_type'];
-            $time_start = $tournament['time_start'];
-            $prize_pool = $tournament['prize_pool'];
-            $tournament_name = $tournament['tournament_name'];
-            $entry_fee = $tournament['entry_fee'];
+        
+        if ($typeoftournament->isEmpty()) {
+            return response()->json(['error' => 'Tournament not found'], 404);
         }
-    
+        
+        $tournament = $typeoftournament->first();
+        $type = $tournament['player_type'];
+        $game_type = $tournament['game_type'];
+        $time_start = $tournament['time_start'];
+        $prize_pool = $tournament['prize_pool'];
+        $tournament_name = $tournament['tournament_name'];
+        $entry_fee = $tournament['entry_fee'];
+        
         $winnersArray = []; // Initialize an empty array to store winner data
-    
+        
+        $functionsAccessed = []; // Array to track accessed functions
+        
         if ($type === '1v1') {
-            // Retrieve winner data for 1v1 tournaments
+            $functionsAccessed[] = 'handle1v1NextRound'; // Function accessed for 1v1
             $winnersData = TournamentTable::where('tournament_id', $tournamentId)
                 ->whereNotNull('winner') // Filter where winner is not null
                 ->get(['winner']);
-    
+        
+            if ($winnersData->isEmpty()) {
+                return response()->json(['error' => 'No winners found for 1v1 tournament'], 404);
+            }
+        
             $winnersArray = $winnersData->pluck('winner')->toArray();
             $totalnumberofwinners = count($winnersArray);
             $nooftables = $totalnumberofwinners / 2;
-    
+        
             $newTournamentId = $tournamentId . '1'; // Append the string to the tournament ID
-    
+        
             $tournamentData = [
                 "tournament_id" => $newTournamentId,
                 "tournament_name" => $tournament_name,
@@ -432,23 +441,29 @@ class TournamentController extends Controller
                 "entry_fee" => $entry_fee,
                 "nooftables" => $nooftables
             ];
-    
+        
             $this->CreateTournamentWithTablesAndId($tournamentData);
-            $this->enrollPlayers($newTournamentId, $winnersArray, '1v1');
+            $functionsAccessed[] = 'CreateTournamentWithTablesAndId'; // Function accessed for tournament creation
+            $this->enrollPlayers1v1($newTournamentId, $winnersArray);
+            $functionsAccessed[] = 'enrollPlayers1v1'; // nFunction accessed for enrolling players
         }
-    
-        if ($type === '1v3') {
-            // Retrieve winner data for 1v3 tournaments
+        
+        else if ($type === '1v3') {
+            $functionsAccessed[] = 'handle1v3NextRound'; // Function accessed for 1v3
             $winnersData = TournamentTablemulti::where('tournament_id', $tournamentId)
                 ->whereNotNull('winner') // Filter where winner is not null
                 ->get(['winner']);
-
+        
+            if ($winnersData->isEmpty()) {
+                return response()->json(['error' => 'No winners found for 1v3 tournament'], 404);
+            }
+        
             $winnersArray = $winnersData->pluck('winner')->toArray();
             $totalnumberofwinners = count($winnersArray);
             $nooftables = $totalnumberofwinners / 4;
-
+        
             $newTournamentId = $tournamentId . '1'; // Append the string to the tournament ID
-    
+        
             $tournamentData = [
                 "tournament_id" => $newTournamentId,
                 "tournament_name" => $tournament_name,
@@ -459,17 +474,20 @@ class TournamentController extends Controller
                 "entry_fee" => $entry_fee,
                 "nooftables" => $nooftables
             ];
-
+        
             $this->CreateTournamentWithTablesAndId($tournamentData);
-            $this->enrollPlayers($tournamentId, $winnersArray, '1v3');
+            $functionsAccessed[] = 'CreateTournamentWithTablesAndId'; // Function accessed for tournament creation
+            $this->enrollPlayers1v3($tournamentId, $winnersArray);
+            $functionsAccessed[] = 'enrollPlayers1v3'; // Function accessed for enrolling players
         }
-
-        return Response::json([
+        
+        return response()->json([
             "message" => "Successfully Created the Next Round Data Table",
             "success" => true,
+            "functions_accessed" => $functionsAccessed // Include accessed functions in the response
         ]);
     }
-
+        
     private function CreateTournamentWithTablesAndId($tournamentData)
     {
         $tournamentId = $tournamentData['tournament_id']; // Assuming 'tournament_id' is present in $tournamentData
@@ -499,36 +517,67 @@ class TournamentController extends Controller
             // Add conditions for other game types if needed
         }
 
-        return response()->json(['success' => 'Tournament and tables created successfully.'], 200);
+        return response()->json(['success' => 'Tournament and tables created successfully.(Tournament Creation)'], 200);
     }
 
-    private function enrollPlayers($tournamentId, $winnersArray, $type)
+    private function enrollPlayers1v1($tournamentId, $winnersArray)
     {
-        // Check if the player ID and tournament ID are provided
+        return $this->enrollPlayersForType($tournamentId, $winnersArray, TournamentTable::class, 2);
+    }
+
+    private function enrollPlayers1v3($tournamentId, $winnersArray)
+    {
+        // Validate if the tournament ID and winners array are provided
         if (empty($winnersArray) || !$tournamentId) {
-            return response()->json(['error' => 'Player IDs or tournament ID is missing.'], 400);
+            return response()->json(['error' => 'Invalid input. Player IDs or tournament ID is missing.'], 400);
         }
     
-        // Retrieve the tournament instance by ID
-        $tournament = Tournament::where('tournament_id', $tournamentId)->first();
+        // Retrieve the table instance by tournament ID and available slots
+        $table = TournamentTablemulti::where('tournament_id', $tournamentId)
+            ->whereNull('player_id4') // Check if the fourth slot is empty
+            ->first();
     
-        if (!$tournament) {
-            return response()->json(['error' => 'Tournament not found.'], 404);
+        if (!$table) {
+            return response()->json(['error' => 'No available tables or all tables are full.'], 400);
         }
     
-        switch ($type) {
-            case '1v1':
-                $tableModel = TournamentTable::class;
-                $totalPlayers = 2;
-                break;
-            case '1v3':
-                $tableModel = TournamentTablemulti::class;
-                $totalPlayers = 4;
-                break;
-            default:
-                return response()->json(['error' => 'Invalid game type for the tournament.'], 400);
+        // Check the number of available slots to enroll players
+        $availableSlots = 4 - count(array_filter([$table->player_id1, $table->player_id2, $table->player_id3, $table->player_id4]));
+    
+        if ($availableSlots <= 0) {
+            return response()->json(['error' => 'No available slots in the table.'], 400);
         }
     
+        foreach ($winnersArray as $index => $playerId) {
+            if ($availableSlots > 0) {
+                $table->{"player_id" . ($index + 1)} = $playerId;
+                $availableSlots--;
+    
+                // Update user's status to indicate engagement in a game and set tournament_id and table_id
+                UserData::updateOrCreate(
+                    ['playerid' => $playerId],
+                    [
+                        'in_game_status' => true,
+                        'tournament_id' => $tournamentId,
+                        'table_id' => $table->table_id,
+                        // Additional columns to store current_table_id, etc.
+                    ]
+                );
+            }
+        }
+    
+        // Update the table status based on the number of filled slots
+        $filledSlots = 4 - $availableSlots;
+        $table->status = "$filledSlots/4";
+    
+        // Save changes to the table instance
+        $table->save();
+    
+        return response()->json(['success' => 'Players enrolled in tables successfully.'], 200);
+    }
+                        
+    private function enrollPlayersForType($tournamentId, $winnersArray, $tableModel, $totalPlayers)
+    {
         foreach ($winnersArray as $playerId) {
             // Retrieve the table instance by tournament ID and available slots
             $table = $tableModel::where('tournament_id', $tournamentId)
@@ -538,11 +587,11 @@ class TournamentController extends Controller
                     }
                 })
                 ->first();
-    
+
             if (!$table) {
                 return response()->json(['message' => 'All tables are full.'], 200);
             }
-    
+
             // Check available slots and enroll the player accordingly
             for ($i = 1; $i <= $totalPlayers; $i++) {
                 if (!$table->{"player_id$i"}) {
@@ -551,7 +600,7 @@ class TournamentController extends Controller
                     break;
                 }
             }
-    
+
             // Update user's status to indicate engagement in a game and set tournament_id and table_id
             UserData::updateOrCreate(
                 ['playerid' => $playerId],
@@ -562,11 +611,11 @@ class TournamentController extends Controller
                     // Additional columns to store current_table_id, etc.
                 ]
             );
-    
+
             // Save changes to the table instance
             $table->save();
         }
-    
-        return response()->json(['success' => 'Players enrolled in tables successfully.'], 200);
-    }    
+
+        return response()->json(['success' => 'Players enrolled in tables successfully.(1v1)'], 200);
+    }
 }

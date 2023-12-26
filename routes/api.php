@@ -68,7 +68,7 @@ Route::get('/tournament/alltournaments',[TournamentController::class,'findallTou
 
 Route::delete('/tournament/delete', [TournamentController::class, 'deleteTournamentDetails']);
 
-Route::delete('/delete/all/players', [PlayerController::class, 'DeleteAllPlayers'])->name('delete.all.players');
+Route::delete('/deleteall', [PlayerController::class,'deleteall'])->name('delete.all.players');
 
 Route::post('/tournament/removeplayer', [TournamentController::class, 'removePlayerFromTournament']);
 
