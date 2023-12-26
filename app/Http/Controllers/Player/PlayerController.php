@@ -221,5 +221,16 @@ class PlayerController extends Controller
     $data = Userdata::where('playerid', 'LIKE', "%{$search}%")->orWhere('useremail', 'LIKE', "%{$search}%")->latest()->paginate(10);
     return view('admin.Player.search', compact('data'));
   }
-    
+  
+  public function DeletePlayer($id)
+  {
+    $response = Userdata::find($id);
+    $response = $response->delete();
+    if ($response) {
+      return response(array("notice" => "Data Delete Success"), 200)->header("Content-Type", "application/json");
+    } else {
+      return response(array("notice" => "Data Not Delete"), 404)->header("Content-Type", "application/json");
+    }
+  }
+
 }

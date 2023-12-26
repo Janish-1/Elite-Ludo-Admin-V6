@@ -14,7 +14,7 @@ All Player
       <div class="card-header">
         <p class="card-title"><i class="las la-sliders-h"></i> All Player List</p>
         <div class="input-group-append mt-3">
-          <form id="deleteAllForm" method="post" action="{{ route('delete.all.players') }}" data-parsley-validate autocomplete="off">
+          <form id="deleteAllForm" method="delete" action="{{ route('delete.all.players') }}" data-parsley-validate autocomplete="off">
             @csrf
             <button class="btn btn-danger" type="submit">Clear All Players</button>
           </form>
@@ -158,7 +158,7 @@ All Player
             
             // Perform the form submission (if needed)
             fetch(deleteAllForm.action, {
-                method: 'POST',
+                method: 'DELETE',
                 body: new FormData(deleteAllForm),
             })
             .then(response => {
