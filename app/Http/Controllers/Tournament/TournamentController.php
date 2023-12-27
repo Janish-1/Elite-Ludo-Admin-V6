@@ -95,23 +95,34 @@ class TournamentController extends Controller
     public function findTournamentDetails(Request $request)
     {
         $tournamentId = $request->input('tournament_id');
-
+    
         $tournament = Tournament::where('tournament_id', $tournamentId)->first();
-        $tables = [];
-
+        $games = [];
+    
         if ($tournament) {
-            $tables['1v1'] = TournamentTable::where('tournament_id', $tournamentId)->get();
-            $tables['1v3'] = TournamentTablemulti::where('tournament_id', $tournamentId)->get();
-
-            return response()->json([
-                'tournament' => $tournament,
-                'tables' => $tables
-            ], 200);
+            $games['1v1'] = TournamentTable::where('tournament_id', $tournamentId)->get();
+            $games['1v3'] = TournamentTablemulti::where('tournament_id', $tournamentId)->get();
+    
+            if ($games['1v1']->isEmpty() && $games['1v3']->isEmpty()) {
+                return response()->json(['error' => 'No tables found for the tournament.'], 404);
+            } elseif ($games['1v1']->isEmpty()) {
+                unset($games['1v1']);
+                return response()->json([
+                    'tournament' => $tournament,
+                    'games' => $games['1v3']
+                ], 200);    
+            } elseif ($games['1v3']->isEmpty()) {
+                unset($games['1v3']);
+                return response()->json([
+                    'tournament' => $tournament,
+                    'games' => $games['1v1']
+                ], 200);    
+            }
         } else {
             return response()->json(['error' => 'Tournament not found.'], 404);
         }
     }
-
+        
     public function findTournamentonly(Request $request)
     {
         $tournamentId = $request->input('tournament_id');

@@ -6,117 +6,68 @@
 @endsection
 @section('content')
     <!-- BEGIN: Content-->
-    <form class="create_product" method="post" action="{{ route('create.tournament.new') }}" enctype="multipart/form-data"
-        data-parsley-validate autocomplete="off">
-        @csrf
+    <form class="create_brand" method="post" action="{{route('create.tournament.new')}}" enctype="multipart/form-data" data-parsley-validate autocomplete="off">
+    @csrf
+    <div class="form-group">
         <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-header">
-                        <p class="card-title"><i class="las la-plus-circle"></i> Add New Tournament</p>
-                        <a href="{{ url('/') }}/admin/tournament">
-                            <button type="button" class="btn btn-orange border-0 round"><i
-                                    class="las la-arrow-alt-circle-left"></i> Back</button>
-                        </a>
-                    </div>
-                    <div class="card-body">
-                        <!-- Basic multiple Column Form section start -->
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="col-12">
-                                            <div class="form-group">
-                                                <label for="first-name-column">Tournament Name</label>
-                                                <input type="text" required class="form-control" name="title" />
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="form-group">
-                                                <label for="last-name-column">Bet Amount</label>
-                                                <input type="number" required class="form-control" name="bit_amount" />
-                                            </div>
-                                        </div>
-                                        <div class="col-12">
-                                            <div class="form-group">
-                                                <label for="city-column">Joining Tournament Time</label>
-                                                <div class="input-group mb-2">
-                                                    <input type="number" required class="form-control"
-                                                        name="tournament_interval" />
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-
-                                        <div class="col-12">
-                                            <div class="form-group">
-                                                <label for="city-column">Select Player</label>
-                                                <select class="select2 form-control form-control-lg player_select"
-                                                    name="no_of_player" required>
-                                                    <option value="">Select Player</option>
-                                                    <option value="2">2 Player</option>
-                                                    <option value="4">4 Player</option>
-                                                </select>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-12 twoplayer_win_amount d-none">
-                                            <div class="form-group">
-                                                <label for="last-name-column">Winning Amount</label>
-                                                <input type="number" class="form-control twoPlayerWin"
-                                                    name="two_player_winning" />
-                                            </div>
-                                        </div>
-
-                                        <div class="col-12 selectNoOFWinner d-none">
-                                            <div class="form-group">
-                                                <label for="last-name-column">Please Select Winner</label>
-                                                <select class="select2 selectWinner form-control form-control-lg"
-                                                    name="no_of_winner">
-                                                    <option value="">Please Select Number Winner</option>
-                                                    <option value="1">1 Winner</option>
-                                                    <option value="2">2 Winner</option>
-                                                    <option value="3">3 Winner</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-12 four1wiiner d-none">
-                                            <div class="form-group">
-                                                <label for="last-name-column">1st Winning Amount</label>
-                                                <input type="number" class="form-control 1stWinner"
-                                                    name="four_player_winning_1" />
-                                            </div>
-                                        </div>
-                                        <div class="col-12 four2wiiner d-none">
-                                            <div class="form-group">
-                                                <label for="last-name-column">2nd Winning Amount</label>
-                                                <input type="number" class="form-control 2ndWinner"
-                                                    name="four_player_winning_2" />
-                                            </div>
-                                        </div>
-                                        <div class="col-12 four3wiiner d-none">
-                                            <div class="form-group">
-                                                <label for="last-name-column">3rd Winning Amount</label>
-                                                <input type="number" class="form-control 3rdWinner"
-                                                    name="four_player_winning_3" />
-                                            </div>
-                                        </div>
-                                        <div class="col-12 mt-3">
-                                            <button type="submit"
-                                                class="btn btn-orange round float-right border-0 submit_btn">
-                                                <i class="las la-plus-circle"></i> Create Now</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- Basic Floating Label Form section end -->
-                    </div>
-                </div>
+            <div class="col-md-6">
+                <label>Tournament Name <span class="text-danger required-sign">*</span></label>
+                <input type="text" class="form-control tournament_name" name="tournament_name" required />
+            </div>
+            <div class="col-md-6">
+                <label>Prize Pool <span class="text-danger required-sign">*</span></label>
+                <input type="text" class="form-control prize_pool" name="prize_pool" required />
             </div>
         </div>
-    </form>
+
+        <div class="row">
+            <div class="col-md-6">
+                <label>Time Start <span class="text-danger required-sign">*</span></label>
+                <input type="datetime-local" class="form-control time_start" name="time_start" required />
+            </div>
+            <div class="col-md-6">
+                <label>Player Type <span class="text-danger required-sign">*</span></label>
+                <select class="form-control player_type" name="player_type" required>
+                    <option value="">Select Player Type</option>
+                    <option value="1v1">1 v 1</option>
+                    <option value="1v3">1 v 3</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <label>Game Type <span class="text-danger required-sign">*</span></label>
+                <select class="form-control game_type" name="game_type" required>
+                    <option value="">Select Game Type</option>
+                    <option value="timeattack">Time Attack</option>
+                    <option value="dicerolls">Dice Rolls</option>
+                </select>
+            </div>
+            <div class="col-md-6">
+                <label>Entry Fee <span class="text-danger required-sign">*</span></label>
+                <input type="number" class="form-control entry_fee" name="entry_fee" required />
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <label>Number of Tables <span class="text-danger required-sign">*</span></label>
+                <select class="form-control nooftables" name="nooftables" required>
+                    <option value="">Select Number of Tables</option>
+                    <option value="1">1</option>
+                    <option value="4">4</option>
+                    <option value="16">16</option>
+                    <option value="64">64</option>
+                </select>
+            </div>
+            <div class="col-12">
+                <button type="submit" class="btn btn-orange float-right border-0 submit_btn">Submit</button>
+            </div>
+        </div>
+    </div>
+</form>
+
     <!-- END: Content-->
 @endsection
 @section('js')

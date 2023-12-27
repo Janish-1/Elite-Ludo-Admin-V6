@@ -16,8 +16,6 @@ use App\Models\Player\otp;
 
 class PlayerController extends Controller
 {
-
-
     public function CreatePlayer(Request $request)
     {
         $gameConfig = Websetting::first();
@@ -30,7 +28,7 @@ class PlayerController extends Controller
             if ($checkGooglePrevAccount['device_token'] != null) {
                 $CheckDevice = Userdata::where('device_token', $request->device_token)->first();
                 if ($CheckDevice != "") {
-                    $CheckBoth = Userdata::where('useremail', $request->email)->where('device_token', $request->device_token)->first();
+                    $CheckBoth = Userdata::where('device_token', $request->device_token)->first();
                     if ($CheckBoth != "") {
                         if ($CheckBoth['banned'] == 0) {
                             $response = ['notice' => 'User Banned'];
@@ -40,9 +38,9 @@ class PlayerController extends Controller
                             return response($response, 200);
                         }
                     } else {
-                        $response = ['notice' => 'User Used Diffrent Device'];
+                        $response = ['notice' => 'User Already Exists !', 'playerid' => $CheckBoth['playerid']];
                         return response($response, 200);
-                    }
+                }
                 } else {
                     $response = ['notice' => 'User Used Diffrent Device'];
                     return response($response, 200);
