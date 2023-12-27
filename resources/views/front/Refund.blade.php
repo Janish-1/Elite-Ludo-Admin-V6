@@ -10,7 +10,7 @@ $home = DB::table('homedetails')->first();
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <!--favicon icon-->
-    <link rel="icon" href="{{ url('/') }}/storage/Brand/{{ $web->favicon }}" type="image/png" sizes="16x16">
+    <link rel="icon" href="https://i.ibb.co/X2V26G9/logo-removebg-preview.png" type="image/png" sizes="16x16">
     <!--title-->
     <title>{{ $web->website_tagline }}</title>
     <!--build:css-->
@@ -27,7 +27,7 @@ $home = DB::table('homedetails')->first();
     <!--preloader start-->
     <div id="preloader">
         <div class="preloader-wrap">
-            <img src="{{ url('/') }}/storage/Brand/{{ $web->head_logo }}" alt="logo" width="80"
+            <img src="https://i.ibb.co/X2V26G9/logo-removebg-preview.png" alt="logo" width="80"
                 class="img-fluid" />
             <div class="thecube">
                 <div class="cube c1"></div>
@@ -44,7 +44,7 @@ $home = DB::table('homedetails')->first();
         <nav class="navbar navbar-expand-lg fixed-top bg-transparent">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}" style="height:45px;">
-                    <img src="{{ url('/') }}/storage/Brand/{{ $web->head_logo }}" alt="logo" width="80"
+                    <img src="https://i.ibb.co/X2V26G9/logo-removebg-preview.png" alt="logo" width="80"
                         class="img-fluid" style="margin-top:-17px;" />
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse"
@@ -75,6 +75,7 @@ $home = DB::table('homedetails')->first();
             <div class="background-image-wraper" style="background: url('assets/img/slider-bg-1.jpg'); opacity: 1;">
             </div>
             <div class="container">
+                <br><br>
                 <div class="row align-items-center">
                     <div class="col-md-9 col-lg-7">
                         <div class="page-header-content text-white pt-4">
@@ -194,14 +195,10 @@ $home = DB::table('homedetails')->first();
         <div class="container">
             <center>
                 <div class="list-inline social-list-default background-color social-hover-2 mt-2">
-                    <li class="list-inline-item"><a class="twitter" href="{{ $web->twitter }}"
-                            target="_blank"><i class="fab fa-twitter"></i></a></li>
-                    <li class="list-inline-item"><a class="youtube" href="{{ $web->youtube }}"
-                            target="_blank"><i class="fab fa-youtube"></i></a></li>
-                    <li class="list-inline-item"><a class="linkedin" href="{{ $web->linkedin }}"
-                            target="_blank"><i class="fab fa-linkedin-in"></i></a></li>
-                    <li class="list-inline-item"><a class="dribbble" href="{{ $web->instagram }}"
+                    <li class="list-inline-item"><a class="dribbble" href="https://www.instagram.com/boomlly.com_?igshid=OGQ5ZDc2ODk2ZA=="
                             target="_blank"><i class="fab fa-instagram"></i></a></li>
+                    <li class="list-inline-item"><a class="dribbble" href="https://whatsapp.com/channel/0029Va4ydTgAojYnH5E1VQ3U"
+                            target="_blank"><i class="fab fa-whatsapp"></i></a></li>
                 </div>
                 <!--foote_bottom_ul_amrc ends here-->
                 <p class="text-center">{{ $web->copyright }}</p>

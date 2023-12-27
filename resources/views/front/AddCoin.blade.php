@@ -22,7 +22,7 @@
     <link rel="stylesheet" href="{{URL::asset('admin-assets/vendors/js/sweet-alert/sweetalert.css')}}">
     <link rel="stylesheet" href="{{URL::asset('admin-assets/vendors/js/sweet-alert/jquery.sweet-modal.min.css')}}">
     <link rel="stylesheet" href="{{URL::asset('front-assets//css/meanmenu.css')}}">
-    <link rel="stylesheet" href="{{URL::asset('front-assets//css/style.css')}}">
+    <link rel="stylesheet" href="{{URL::asset('front-assets//css/style1.css')}}">
 </head>
 
 <body>
