@@ -364,7 +364,7 @@ class GameManagerController extends Controller
 
     public function Leaderboard(Request $request)
     {
-        $userdata = Userdata::OrderBy('wincoin', 'DESC')->limit(15)->get();
+        $userdata = Userdata::orderBy('wincoin', 'DESC')->get();
         $response = ["message" => 'Leader Board Fetch Success', 'leaderboard' => $userdata];
         return response($response, 200);
     }

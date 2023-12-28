@@ -468,8 +468,6 @@ class FrontController extends Controller
         }
     }
 
-
-
     public function DeleteContact($id)
     {
         $response = Contact::find($id);

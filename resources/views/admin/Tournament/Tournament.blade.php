@@ -34,116 +34,375 @@ All Tournament List
         </button>
       </div>
       @endif
-      <div class="card-body">
-        <div class="table-responsive">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Tournament Id</th>
-                <th>Tournament Title</th>
-                <th>Prize Pool</th>
-                <th>Player Type</th>
-                <th>Winner</th>
-                <th>time Start</th>
-                <th>Game Type</th>
-                <th>Entry Fee</th>
-                <th>No of Tables</th>
-                <th>Tournament Details</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              @foreach($tournaments as $key =>$result)
-              <tr>
-                <td><span class="font-weight-bold">{{ $tournaments->firstItem() + $key }}</span></td>
-                <td>{{ $result->tournament_id }}</td>
-                <td>{{ $result->tournament_name }}</td>
-                <td>{{ $result->prize_pool }} <i class="las la-rupee-sign"></i></td>
-                <td>{{ $result->player_type }}</td>
-                <td>{{ $result->winner }} <i class="las la-users"></i></td>
-                <td>{{ $result->time_start }}</td>
-                <td>{{ $result->game_type }}</td>
-                <td>{{ $result->entry_fee }}</td>
-                <td>{{ $result->nooftables }}</td>
-                <td>
-                  <div class="dropdown">
-                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu{{ $key }}" data-toggle="collapse" data-target="#collapseData{{ $key }}" aria-expanded="false" aria-controls="collapseData{{ $key }}">
-                      v
-                    </button>
-                  </div>
-                </td>
-                <td>
-                  <form method="POST" action="https://ludo.pujanpaath.com/api/tournament/delete?tournament_id={{ $result->tournament_id }}">
-                    @csrf <!-- CSRF protection for POST requests -->
-                    @method('DELETE') <!-- Method spoofing for DELETE request -->
-                    <button type="submit" class="btn btn-danger">Delete</button>
-                  </form>
-                </td>
-              </tr>
-              <tr>
-                <td colspan="11" class="p-0">
-                  <div class="collapse" id="collapseData{{ $key }}">
-                    <div class="card card-body">
-                      <p>
-                        <strong>Tournament ID:</strong> {{ $result->tournament_id }}<br>
-                        <strong>Tournament Name:</strong> {{ $result->tournament_name }}<br>
-                        <strong>Prize Pool:</strong> {{ $result->prize_pool }}<br>
-                        <!-- Display other tournament details -->
-                      </p>
-                      <br>
-                      <strong>Tables:</strong><br>
+      <div class="row">
+        <!-- left menu section -->
+        <div class="col-md-3 mb-2 mb-md-0">
+          <ul class="nav nav-pills flex-column nav-left">
+            <!-- general -->
+            <li class="nav-item">
+              <a class="nav-link active" id="account-pill-general" data-toggle="pill" href="#ongoing-tournaments" aria-expanded="true">
+                <i class="las la-globe-europe font-medium-3 mr-1"></i>
+                <span class="font-weight-bold">Ongoing Tournaments</span>
+              </a>
+            </li>
+            <!-- change password -->
+            <li class="nav-item">
+              <a class="nav-link" id="account-pill-logo" data-toggle="pill" href="#completed-tournaments" aria-expanded="false">
+                <i class="lab la-pagelines font-medium-3 mr-1"></i>
+                <span class="font-weight-bold">Completed Tournaments</span>
+              </a>
+            </li>
 
+          </ul>
+        </div>
+        <!--/ left menu section -->
+        <div class="col-md-9">
+          <div class="card">
+            <div class="card-body">
+              <div class="tab-content">
+                <div role="tabpanel" class="tab-pane active" id="ongoing-tournaments" aria-labelledby="account-pill-general" aria-expanded="true">
+                  <div class="card-body">
+                    <div class="table-responsive">
                       <table class="table">
                         <thead>
                           <tr>
                             <th>#</th>
-                            <th>Table ID</th>
-                            <th>Game Name</th>
-                            <th>Player ID 1</th>
-                            <th>Player ID 2</th>
-                            <th>Player ID 3</th>
-                            <th>Player ID 4</th>
+                            <th>Tournament Id</th>
+                            <th>Tournament Title</th>
+                            <th>Prize Pool</th>
+                            <th>Player Type</th>
                             <th>Winner</th>
-                            <th>Status</th>
-                            <th>Updated At</th>
-                            <th>Created At</th>
+                            <th>time Start</th>
+                            <th>Game Type</th>
+                            <th>Entry Fee</th>
+                            <th>No of Tables</th>
+                            <th>Tournament Details</th>
+                            <th>Actions</th>
                           </tr>
                         </thead>
                         <tbody>
-                          @foreach ($result->tables as $key => $tables)
-                          @foreach ($tables as $index => $table)
+                          @foreach($tournaments as $key =>$result)
                           <tr>
-                            <td>{{ $index + 1 }}</td>
-                            <!-- Display table details -->
-                            <!-- Example: -->
-                            <td>{{ $table->table_id }}</td>
-                            <td>{{ $table->game_name }}</td>
-                            <td>{{ $table->player_id1 ?? 'N/A' }}</td>
-                            <td>{{ $table->player_id2 ?? 'N/A' }}</td>
-                            <td>{{ $table->player_id3 ?? 'N/A' }}</td>
-                            <td>{{ $table->player_id4 ?? 'N/A' }}</td>
-                            <td>{{ $table->winner ?? 'N/A' }}</td>
-                            <td>{{ $table->status }}</td>
-                            <td>{{ $table->updated_at }}</td>
-                            <td>{{ $table->created_at }}</td>
+                            <td><span class="font-weight-bold">{{ $tournaments->firstItem() + $key }}</span></td>
+                            <td>{{ $result->tournament_id }}</td>
+                            <td>{{ $result->tournament_name }}</td>
+                            <td>{{ $result->prize_pool }} <i class="las la-rupee-sign"></i></td>
+                            <td>{{ $result->player_type }}</td>
+                            <td>{{ $result->winner }} <i class="las la-users"></i></td>
+                            <td>{{ $result->time_start }}</td>
+                            <td>{{ $result->game_type }}</td>
+                            <td>{{ $result->entry_fee }}</td>
+                            <td>{{ $result->nooftables }}</td>
+                            <td>
+                              <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu{{ $key }}" data-toggle="collapse" data-target="#collapseData{{ $key }}" aria-expanded="false" aria-controls="collapseData{{ $key }}">
+                                  v
+                                </button>
+                              </div>
+                            </td>
+                            <td>
+                              <form method="POST" action="https://ludo.pujanpaath.com/api/tournament/delete?tournament_id={{ $result->tournament_id }}">
+                                @csrf <!-- CSRF protection for POST requests -->
+                                @method('DELETE') <!-- Method spoofing for DELETE request -->
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                              </form>
+                            </td>
                           </tr>
-                          @endforeach
+                          <tr>
+                            <td colspan="11" class="p-0">
+                              <div class="collapse" id="collapseData{{ $key }}">
+                                <div class="card card-body">
+                                  <p>
+                                    <strong>Tournament ID:</strong> {{ $result->tournament_id }}<br>
+                                    <strong>Tournament Name:</strong> {{ $result->tournament_name }}<br>
+                                    <strong>Prize Pool:</strong> {{ $result->prize_pool }}<br>
+                                    <!-- Display other tournament details -->
+                                  </p>
+                                  <br>
+                                  <strong>Tables:</strong><br>
+
+                                  <table class="table">
+                                    <thead>
+                                      <tr>
+                                        <th>#</th>
+                                        <th>Table ID</th>
+                                        <th>Game Name</th>
+                                        <th>Player ID 1</th>
+                                        <th>Player ID 2</th>
+                                        <th>Player ID 3</th>
+                                        <th>Player ID 4</th>
+                                        <th>Winner</th>
+                                        <th>Status</th>
+                                        <th>Updated At</th>
+                                        <th>Created At</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      @if(isset($result->tables) && !empty($result->tables))
+                                      @if(isset($result->tables['1v1']) && !$result->tables['1v1']->isEmpty())
+                                      @foreach($result->tables['1v1'] as $key => $table)
+                                      <tr>
+                                        <td>{{ $key + 1 }}</td>
+                                        <td>{{ $table->table_id ?? 'N/A' }}</td>
+                                        <td>{{ $table->game_name ?? 'N/A' }}</td>
+                                        <td>{{ $table->player_id1 ?? 'N/A' }}
+                                          <a href="{{url('admin/player/view/'.Crypt::encrypt($table->player_id1))}}">
+                                            <button type="button" data-toggle="tooltip" data-placement="top" title="View" class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton"><i class="las la-eye"></i>
+                                            </button>
+                                          </a>
+                                        </td>
+                                        <td>{{ $table->player_id2 ?? 'N/A' }}
+                                          <a href="{{url('admin/player/view/'.Crypt::encrypt($table->player_id2))}}">
+                                            <button type="button" data-toggle="tooltip" data-placement="top" title="View" class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton"><i class="las la-eye"></i>
+                                            </button>
+                                          </a>
+                                        </td>
+                                        <td>{{ $table->player_id3 ?? 'N/A' }}
+                                          <a href="{{url('admin/player/view/'.Crypt::encrypt($table->player_id3))}}">
+                                            <button type="button" data-toggle="tooltip" data-placement="top" title="View" class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton"><i class="las la-eye"></i>
+                                            </button>
+                                          </a>
+                                        </td>
+                                        <td>{{ $table->player_id4 ?? 'N/A' }}
+                                          <a href="{{url('admin/player/view/'.Crypt::encrypt($table->player_id4))}}">
+                                            <button type="button" data-toggle="tooltip" data-placement="top" title="View" class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton"><i class="las la-eye"></i>
+                                            </button>
+                                          </a>
+                                        </td>
+                                        <td>{{ $table->winner ?? 'N/A' }}</td>
+                                        <td>{{ $table->status ?? 'N/A' }}</td>
+                                        <td>{{ $table->updated_at ?? 'N/A' }}</td>
+                                        <td>{{ $table->created_at ?? 'N/A' }}</td>
+                                      </tr>
+                                      @endforeach
+                                      @else
+                                      @if(isset($result->tables['1v3']) && !$result->tables['1v3']->isEmpty())
+                                      @foreach($result->tables['1v3'] as $key => $table)
+                                      <tr>
+                                        <td>{{ $key + 1 }}</td>
+                                        <td>{{ $table->table_id ?? 'N/A' }}</td>
+                                        <td>{{ $table->game_name ?? 'N/A' }}</td>
+                                        <td>{{ $table->player_id1 ?? 'N/A' }}
+                                          <a href="{{url('admin/player/view/'.Crypt::encrypt($table->player_id1))}}">
+                                            <button type="button" data-toggle="tooltip" data-placement="top" title="View" class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton"><i class="las la-eye"></i>
+                                            </button>
+                                          </a>
+                                        </td>
+                                        <td>{{ $table->player_id2 ?? 'N/A' }}
+                                          <a href="{{url('admin/player/view/'.Crypt::encrypt($table->player_id2))}}">
+                                            <button type="button" data-toggle="tooltip" data-placement="top" title="View" class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton"><i class="las la-eye"></i>
+                                            </button>
+                                          </a>
+                                        </td>
+                                        <td>{{ $table->player_id3 ?? 'N/A' }}
+                                          <a href="{{url('admin/player/view/'.Crypt::encrypt($table->player_id3))}}">
+                                            <button type="button" data-toggle="tooltip" data-placement="top" title="View" class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton"><i class="las la-eye"></i>
+                                            </button>
+                                          </a>
+                                        </td>
+                                        <td>{{ $table->player_id4 ?? 'N/A' }}
+                                          <a href="{{url('admin/player/view/'.Crypt::encrypt($table->player_id4))}}">
+                                            <button type="button" data-toggle="tooltip" data-placement="top" title="View" class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton"><i class="las la-eye"></i>
+                                            </button>
+                                          </a>
+                                        </td>
+                                        <td>{{ $table->winner ?? 'N/A' }}</td>
+                                        <td>{{ $table->status ?? 'N/A' }}</td>
+                                        <td>{{ $table->updated_at ?? 'N/A' }}</td>
+                                        <td>{{ $table->created_at ?? 'N/A' }}</td>
+                                      </tr>
+
+                                      @endforeach
+                                      @endif
+                                      @endif
+                                      @endif
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
                           @endforeach
                         </tbody>
                       </table>
                     </div>
                   </div>
-                </td>
-              </tr>
+                  <div class="my-1">
+                    {{ $tournaments->onEachSide(3)->links('vendor.pagination.custom') }}
+                  </div>
+                </div>
+                <div role="tabpanel" class="tab-pane" id="completed-tournaments" aria-labelledby="account-pill-general" aria-expanded="true">
+                  <div class="card-body">
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>#</th>
+                            <th>Tournament Id</th>
+                            <th>Tournament Title</th>
+                            <th>Prize Pool</th>
+                            <th>Player Type</th>
+                            <th>Winner</th>
+                            <th>time Start</th>
+                            <th>Game Type</th>
+                            <th>Entry Fee</th>
+                            <th>Tournament Details</th>
+                            <th>Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @foreach($completedTournaments as $key =>$result)
+                          <tr>
+                            <td><span class="font-weight-bold">{{ $completedTournaments->firstItem() + $key }}</span></td>
+                            <td>{{ $result->tournament_id }}</td>
+                            <td>{{ $result->tournament_name }}</td>
+                            <td>{{ $result->prize_pool }} <i class="las la-rupee-sign"></i></td>
+                            <td>{{ $result->player_type }}</td>
+                            <td>{{ $result->winner }} <i class="las la-users"></i></td>
+                            <td>{{ $result->time_start }}</td>
+                            <td>{{ $result->game_type }}</td>
+                            <td>{{ $result->entry_fee }}</td>
+                            <td>
+                              <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu{{ $key }}" data-toggle="collapse" data-target="#collapseData{{ $key }}" aria-expanded="false" aria-controls="collapseData{{ $key }}">
+                                  v
+                                </button>
+                              </div>
+                            </td>
+                            <td>
+                              <form method="POST" action="https://ludo.pujanpaath.com/api/tournament/delete?tournament_id={{ $result->tournament_id }}">
+                                @csrf <!-- CSRF protection for POST requests -->
+                                @method('DELETE') <!-- Method spoofing for DELETE request -->
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                              </form>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td colspan="11" class="p-0">
+                              <div class="collapse" id="collapseData{{ $key }}">
+                                <div class="card card-body">
+                                  <p>
+                                    <strong>Tournament ID:</strong> {{ $result->tournament_id }}<br>
+                                    <strong>Tournament Name:</strong> {{ $result->tournament_name }}<br>
+                                    <strong>Prize Pool:</strong> {{ $result->prize_pool }}<br>
+                                    <!-- Display other tournament details -->
+                                  </p>
+                                  <br>
+                                  <strong>Tables:</strong><br>
 
-              @endforeach
-            </tbody>
-          </table>
+                                  <table class="table">
+                                    <thead>
+                                      <tr>
+                                        <th>#</th>
+                                        <th>Table ID</th>
+                                        <th>Game Name</th>
+                                        <th>Player ID 1</th>
+                                        <th>Player ID 2</th>
+                                        <th>Player ID 3</th>
+                                        <th>Player ID 4</th>
+                                        <th>Winner</th>
+                                        <th>Status</th>
+                                        <th>Updated At</th>
+                                        <th>Created At</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      @if(isset($result->tables) && !empty($result->tables))
+                                      @if(isset($result->tables['1v1']) && !$result->tables['1v1']->isEmpty())
+                                      @foreach($result->tables['1v1'] as $key => $table)
+                                      <tr>
+                                        <td>{{ $key + 1 }}</td>
+                                        <td>{{ $table->table_id ?? 'N/A' }}</td>
+                                        <td>{{ $table->game_name ?? 'N/A' }}</td>
+                                        <td>{{ $table->player_id1 ?? 'N/A' }}
+                                          <a href="{{url('admin/player/view/'.Crypt::encrypt($table->player_id1))}}">
+                                            <button type="button" data-toggle="tooltip" data-placement="top" title="View" class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton"><i class="las la-eye"></i>
+                                            </button>
+                                          </a>
+                                        </td>
+                                        <td>{{ $table->player_id2 ?? 'N/A' }}
+                                          <a href="{{url('admin/player/view/'.Crypt::encrypt($table->player_id2))}}">
+                                            <button type="button" data-toggle="tooltip" data-placement="top" title="View" class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton"><i class="las la-eye"></i>
+                                            </button>
+                                          </a>
+                                        </td>
+                                        <td>{{ $table->player_id3 ?? 'N/A' }}
+                                          <a href="{{url('admin/player/view/'.Crypt::encrypt($table->player_id3))}}">
+                                            <button type="button" data-toggle="tooltip" data-placement="top" title="View" class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton"><i class="las la-eye"></i>
+                                            </button>
+                                          </a>
+                                        </td>
+                                        <td>{{ $table->player_id4 ?? 'N/A' }}
+                                          <a href="{{url('admin/player/view/'.Crypt::encrypt($table->player_id4))}}">
+                                            <button type="button" data-toggle="tooltip" data-placement="top" title="View" class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton"><i class="las la-eye"></i>
+                                            </button>
+                                          </a>
+                                        </td>
+                                        <td>{{ $table->winner ?? 'N/A' }}</td>
+                                        <td>{{ $table->status ?? 'N/A' }}</td>
+                                        <td>{{ $table->updated_at ?? 'N/A' }}</td>
+                                        <td>{{ $table->created_at ?? 'N/A' }}</td>
+                                      </tr>
+                                      @endforeach
+                                      @else
+                                      @if(isset($result->tables['1v3']) && !$result->tables['1v3']->isEmpty())
+                                      @foreach($result->tables['1v3'] as $key => $table)
+                                      <tr>
+                                        <td>{{ $key + 1 }}</td>
+                                        <td>{{ $table->table_id ?? 'N/A' }}</td>
+                                        <td>{{ $table->game_name ?? 'N/A' }}</td>
+                                        <td>{{ $table->player_id1 ?? 'N/A' }}
+                                          <a href="{{url('admin/player/view/'.Crypt::encrypt($table->player_id1))}}">
+                                            <button type="button" data-toggle="tooltip" data-placement="top" title="View" class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton"><i class="las la-eye"></i>
+                                            </button>
+                                          </a>
+                                        </td>
+                                        <td>{{ $table->player_id2 ?? 'N/A' }}
+                                          <a href="{{url('admin/player/view/'.Crypt::encrypt($table->player_id2))}}">
+                                            <button type="button" data-toggle="tooltip" data-placement="top" title="View" class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton"><i class="las la-eye"></i>
+                                            </button>
+                                          </a>
+                                        </td>
+                                        <td>{{ $table->player_id3 ?? 'N/A' }}
+                                          <a href="{{url('admin/player/view/'.Crypt::encrypt($table->player_id3))}}">
+                                            <button type="button" data-toggle="tooltip" data-placement="top" title="View" class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton"><i class="las la-eye"></i>
+                                            </button>
+                                          </a>
+                                        </td>
+                                        <td>{{ $table->player_id4 ?? 'N/A' }}
+                                          <a href="{{url('admin/player/view/'.Crypt::encrypt($table->player_id4))}}">
+                                            <button type="button" data-toggle="tooltip" data-placement="top" title="View" class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton"><i class="las la-eye"></i>
+                                            </button>
+                                          </a>
+                                        </td>
+                                        <td>{{ $table->winner ?? 'N/A' }}</td>
+                                        <td>{{ $table->status ?? 'N/A' }}</td>
+                                        <td>{{ $table->updated_at ?? 'N/A' }}</td>
+                                        <td>{{ $table->created_at ?? 'N/A' }}</td>
+                                      </tr>
+                                      @endforeach
+                                      @endif
+                                      @endif
+                                      @endif
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                          @endforeach
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div class="my-1">
+                    {{ $completedTournaments->onEachSide(3)->links('vendor.pagination.custom') }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="my-1">
-        {{ $tournaments->onEachSide(3)->links('vendor.pagination.custom') }}
       </div>
     </div>
   </div>

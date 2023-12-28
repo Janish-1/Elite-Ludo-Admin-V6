@@ -21,6 +21,7 @@ use App\Http\Controllers\Cashfree\CashfreeController;
 use App\Http\Controllers\Addcoin\AddCoinController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AdsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,8 +47,16 @@ Route::group(['middleware' => 'admin_auth'], function () {
             session()->flash('error', 'Logout Successfully !');
             return view('admin.login.AdminLogin');
         });
+
+        Route::get('/ads', [AdsController::class,'index']);
+
+        Route::post('/ads/updateimage/a', [AdsController::class, 'UpdateAda'])->name('update.Ad.imagea');
+
+        Route::post('/ads/updateimage/b', [AdsController::class, 'UpdateAdb'])->name('update.Ad.imageb');        
+
         //admin coding
         Route::get('/dashboard', [HomeController::class, 'Index']);
+
         //logout route
         Route::get('/account', [AccountController::class, 'index']);
         Route::post('/account/profile/general', [AccountController::class, 'updateImage'])->name('update.profile.general');

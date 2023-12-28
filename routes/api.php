@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\Player\PlayerController;
 use App\Http\Controllers\Tournament\TournamentController;
 use App\Http\Controllers\Api\Player\GameManagerController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AdsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -81,6 +82,17 @@ Route::post('/tournament/playerwin', [TournamentController::class, 'playerwin'])
 Route::post('/tournament/nextround',[TournamentController::class, 'nextround']);
 
 Route::post('/tournament/create/new', [TournamentController::class, 'CreateTournamentWithTables']);
+
+Route::get('/ads', [AdsController::class,'index']);
+
+Route::post('/ads/updateimage/a', [AdsController::class, 'UpdateAda'])->name('update.Ad.imagea');
+
+Route::post('/ads/updateimage/b', [AdsController::class, 'UpdateAdb'])->name('update.Ad.imageb');
+
+Route::get('/getads',[AdsController::class,'getAllAds']);
+
+Route::post('/tournament/winner',[TournamentController::class, 'tournamentwinner']);
+
 // This route is for payment initiate page
 
 Route::get('/razorpay/payment',[RazorpayController::class,'Initiate']);

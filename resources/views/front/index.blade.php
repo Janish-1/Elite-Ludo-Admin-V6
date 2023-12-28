@@ -84,7 +84,7 @@ $home = DB::table('homedetails')->first();
                             <p class="lead">{{ $home->subheading }}</p>
 
                             <div class="action-btns mt-3">
-                                <a href="{{ url('/') }}/storage/Brand/{{ $home->download_link }}"
+                                <a href="{{ url('/') }}/storage/Boomlly.apk"
                                     class="btn btn-brand-03 btn-rounded mr-3">Download Now <i
                                         class="fas fa-cloud-download-alt pl-2"></i></a>
                                 <a href=""
