@@ -387,21 +387,27 @@ class TournamentController extends Controller
     public function playerwin(Request $request)
     {
         $playerId = $request->input('player_id');
+        $tournament_id = $request->input('tournament_id');
+        $table_id = $request->input('table_id');
 
         // Check if the player ID is provided
-        if (!$playerId) {
+        if (!$playerId || !$tournament_id || !$table_id) {
             return Response::json(['error' => 'Player ID is missing.'], 400);
         }
 
         $playerFoundDetails = [];
 
         // Find player in TournamentTable
-        $playerInTournamentTable = TournamentTable::where('player_id1', $playerId)
+        $playerInTournamentTable = TournamentTable::where('tournament_id',$tournament_id)
+            ->orwhere('table_id',$table_id)
+            ->orwhere('player_id1', $playerId)
             ->orWhere('player_id2', $playerId)
             ->get();
 
         // Find player in TournamentTablemulti
-        $playerInTournamentTableMulti = TournamentTablemulti::where('player_id1', $playerId)
+        $playerInTournamentTableMulti = TournamentTablemulti::where('tournament_id',$tournament_id)
+            ->orwhere('table_id',$table_id)
+            ->orwhere('player_id1', $playerId)
             ->orWhere('player_id2', $playerId)
             ->orWhere('player_id3', $playerId)
             ->orWhere('player_id4', $playerId)
