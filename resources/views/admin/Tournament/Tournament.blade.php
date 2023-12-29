@@ -57,6 +57,10 @@ All Tournament List
         </div>
         <!--/ left menu section -->
         <div class="col-md-9">
+          <form id="deleteAllForm" method="DELETE" action="{{ route('delete.all.tournaments') }}" data-parsley-validate autocomplete="off">
+            @csrf
+            <button class="btn btn-danger" type="submit">Delete All Tournaments</button>
+          </form>
           <div class="card">
             <div class="card-body">
               <div class="tab-content">
@@ -101,7 +105,7 @@ All Tournament List
                               </div>
                             </td>
                             <td>
-                              <form method="POST" action="https://ludo.pujanpaath.com/api/tournament/delete?tournament_id={{ $result->tournament_id }}">
+                              <form method="POST" action="{{ route('delete.tournaments', ['tournament_id' => $result->tournament_id]) }}">
                                 @csrf <!-- CSRF protection for POST requests -->
                                 @method('DELETE') <!-- Method spoofing for DELETE request -->
                                 <button type="submit" class="btn btn-danger">Delete</button>
@@ -270,7 +274,7 @@ All Tournament List
                               </div>
                             </td>
                             <td>
-                              <form method="POST" action="https://ludo.pujanpaath.com/api/tournament/delete?tournament_id={{ $result->tournament_id }}">
+                              <form method="POST" action="{{ route('delete.tournaments', ['tournament_id' => $result->tournament_id]) }}">
                                 @csrf <!-- CSRF protection for POST requests -->
                                 @method('DELETE') <!-- Method spoofing for DELETE request -->
                                 <button type="submit" class="btn btn-danger">Delete</button>
@@ -413,4 +417,63 @@ All Tournament List
 <!-- END: Content-->
 @endsection
 @section('js')
+<script>
+  $(document).ready(function() {
+    $('#deleteButton').on('click', function(e) {
+      e.preventDefault();
+
+      var tournamentId = $('#tournamentId').val(); // Replace this with how you fetch the tournament ID from your form
+
+      $.ajax({
+        url: '/tournament/delete/' + tournamentId,
+        type: 'DELETE', // Send a DELETE request
+        headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(response) {
+          // Handle success response
+          console.log(response);
+          // Check if the deletion was successful
+          if (response.success) {
+            // Reload the page after successful deletion
+            location.reload(true); // Reloads the page from the server
+          } else {
+            console.log('Deletion unsuccessful.');
+          }
+        },
+        error: function(xhr, status, error) {
+          // Handle error response
+          console.error(error);
+        }
+      });
+
+      return false; // Prevent further propagation and default action
+    });
+  });
+</script>
+<script>
+  $(document).ready(function() {
+    $('#deleteAllForm').on('submit', function(e) {
+      e.preventDefault();
+
+      $.ajax({
+        url: $(this).attr('action'),
+        type: 'DELETE', // Sending a DELETE request
+        headers: {
+          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function(response) {
+          // Handle success response
+          console.log(response);
+          // Reload the page after successful deletion
+          location.reload();
+        },
+        error: function(xhr, status, error) {
+          // Handle error response
+          console.error(error);
+        }
+      });
+    });
+  });
+</script>
 @endsection

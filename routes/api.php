@@ -67,7 +67,9 @@ Route::get('/tournament/onlytournament',[TournamentController::class,'findTourna
 
 Route::get('/tournament/alltournaments',[TournamentController::class,'findallTournaments']);
 
-Route::delete('/tournament/delete', [TournamentController::class, 'deleteTournamentDetails']);
+Route::delete('/tournament/delete', [TournamentController::class, 'deleteTournamentDetails'])->name('delete.tournaments');
+
+Route::delete('/tournament/all/delete', [TournamentController::class, 'deleteAllTournaments'])->name('delete.all.tournaments');
 
 Route::delete('/deleteall', [PlayerController::class,'deleteall'])->name('delete.all.players');
 
@@ -85,11 +87,9 @@ Route::post('/tournament/create/new', [TournamentController::class, 'CreateTourn
 
 Route::get('/ads', [AdsController::class,'index']);
 
+Route::get('/ads', [AdsController::class,'index']);
 Route::post('/ads/updateimage/a', [AdsController::class, 'UpdateAda'])->name('update.Ad.imagea');
-
 Route::post('/ads/updateimage/b', [AdsController::class, 'UpdateAdb'])->name('update.Ad.imageb');
-
-Route::get('/getads',[AdsController::class,'getAllAds']);
 
 Route::post('/tournament/winner',[TournamentController::class, 'tournamentwinner']);
 

@@ -49,10 +49,8 @@ Route::group(['middleware' => 'admin_auth'], function () {
         });
 
         Route::get('/ads', [AdsController::class,'index']);
-
         Route::post('/ads/updateimage/a', [AdsController::class, 'UpdateAda'])->name('update.Ad.imagea');
-
-        Route::post('/ads/updateimage/b', [AdsController::class, 'UpdateAdb'])->name('update.Ad.imageb');        
+        Route::post('/ads/updateimage/b', [AdsController::class, 'UpdateAdb'])->name('update.Ad.imageb');
 
         //admin coding
         Route::get('/dashboard', [HomeController::class, 'Index']);

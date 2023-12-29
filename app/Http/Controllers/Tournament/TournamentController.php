@@ -26,50 +26,74 @@ class TournamentController extends Controller
     public function index()
     {
         try {
-            $tournaments = Tournament::where('t_status', 'ongoing')->latest()->paginate(10);
-    
+            $tournaments  = Tournament::latest()->paginate(10);
+
             // Log the ongoing tournaments
-            Log::info("Ongoing Tournaments: ");
+            Log::info("Ongoing Tournaments - 0: ");
             foreach ($tournaments as $tournament) {
                 $tournamentId = $tournament->tournament_id;
                 $tables['1v1'] = TournamentTable::where('tournament_id', $tournamentId)->get();
                 $tables['1v3'] = TournamentTablemulti::where('tournament_id', $tournamentId)->get();
-    
+
                 Log::info("Tournament ID: " . $tournamentId);
                 Log::info("Tables for 1v1: " . $tables['1v1']->toJson());
                 Log::info("Tables for 1v3: " . $tables['1v3']->toJson());
-    
-                if ($tournament->time_start < now() && $tournament->t_status != 'completed') {
+
+                // Convert time_start to DateTime object for accurate comparison
+                $startTime = new \DateTime($tournament->time_start);
+                $currentTime = now();
+
+                if ($startTime < $currentTime && $tournament->t_status != 'completed') {
                     Tournament::where('tournament_id', $tournamentId)->update(['t_status' => 'ongoing']);
                 }
-    
+
                 // Assign tables to the specific tournament
                 $tournament->tables = $tables;
-    
+
                 // Log assigned tables for the specific tournament
                 Log::info("Assigned Tables for Tournament ID " . $tournamentId . ": " . json_encode($tournament->tables));
             }
-    
+
+            $ongoingtournaments = Tournament::where('t_status', 'ongoing')->latest()->paginate(10);
+            // Log the ongoing tournaments
+            Log::info("Ongoing Tournaments - 1: ");
+            foreach ($ongoingtournaments as $tournament) {
+                $tournamentId = $tournament->tournament_id;
+                $tables['1v1'] = TournamentTable::where('tournament_id', $tournamentId)->get();
+                $tables['1v3'] = TournamentTablemulti::where('tournament_id', $tournamentId)->get();
+
+                Log::info("Tournament ID: " . $tournamentId);
+                Log::info("Tables for 1v1: " . $tables['1v1']->toJson());
+                Log::info("Tables for 1v3: " . $tables['1v3']->toJson());
+
+                // Assign tables to the specific tournament
+                $tournament->tables = $tables;
+
+                // Log assigned tables for the specific tournament
+                Log::info("Assigned Tables for Tournament ID " . $tournamentId . ": " . json_encode($tournament->tables));
+            }
+
+
             $completedTournaments = Tournament::where('t_status', 'completed')->latest()->paginate(10);
-    
+
             // Log the completed tournaments
             Log::info("Completed Tournaments: ");
             foreach ($completedTournaments as $completedTournament) {
                 $tournamentId = $completedTournament->tournament_id;
                 $completedTables['1v1'] = TournamentTable::where('tournament_id', $tournamentId)->get();
                 $completedTables['1v3'] = TournamentTablemulti::where('tournament_id', $tournamentId)->get();
-            
+
                 Log::info("Tournament ID: " . $tournamentId);
                 Log::info("Tables for 1v1: " . $completedTables['1v1']->toJson());
                 Log::info("Tables for 1v3: " . $completedTables['1v3']->toJson());
-            
+
                 // Assign tables to the specific completed tournament
                 $completedTournament->tables = $completedTables;
-            
+
                 // Log assigned tables for the specific completed tournament
                 Log::info("Assigned Tables for Completed Tournament ID " . $tournamentId . ": " . json_encode($completedTournament->tables));
             }
-                
+
             return view("admin.Tournament.Tournament", compact('tournaments', 'completedTournaments'));
         } catch (\Exception $e) {
             // Handle the exception (e.g., log the error, display an error message)
@@ -77,8 +101,7 @@ class TournamentController extends Controller
             return back()->withError($e->getMessage())->withErrors($e->getMessage());
         }
     }
-    
-            
+
     public function AddTournament()
     {
         return view("admin.Tournament.AddTournament");
@@ -302,9 +325,34 @@ class TournamentController extends Controller
             // Delete tournament
             $tournament->delete();
 
-            return response()->json(['success' => 'Tournament and associated tables deleted successfully.'], 200);
+            // Redirect to the specified URL after successful deletion
+            return redirect('admin/tournament')->with('success', 'Tournament and associated tables deleted successfully.');
         } else {
             return response()->json(['error' => 'Tournament not found.'], 404);
+        }
+    }
+
+    public function deleteAllTournaments()
+    {
+        // Get all tournaments
+        $tournaments = Tournament::all();
+
+        if ($tournaments->isNotEmpty()) {
+            foreach ($tournaments as $tournament) {
+                $tournamentId = $tournament->tournament_id;
+
+                // Delete associated tables for each tournament
+                TournamentTable::where('tournament_id', $tournamentId)->delete();
+                TournamentTablemulti::where('tournament_id', $tournamentId)->delete();
+
+                // Delete the tournament itself
+                $tournament->delete();
+            }
+
+            // Redirect to the specified URL after successful deletion
+            return redirect('admin/tournament')->with('success', 'All tournaments and associated tables deleted successfully.');
+        } else {
+            return redirect('admin/tournament')->with('error', 'No tournaments found.');
         }
     }
 
@@ -387,27 +435,21 @@ class TournamentController extends Controller
     public function playerwin(Request $request)
     {
         $playerId = $request->input('player_id');
-        $tournament_id = $request->input('tournament_id');
-        $table_id = $request->input('table_id');
 
         // Check if the player ID is provided
-        if (!$playerId || !$tournament_id || !$table_id) {
+        if (!$playerId) {
             return Response::json(['error' => 'Player ID is missing.'], 400);
         }
 
         $playerFoundDetails = [];
 
         // Find player in TournamentTable
-        $playerInTournamentTable = TournamentTable::where('tournament_id',$tournament_id)
-            ->orwhere('table_id',$table_id)
-            ->orwhere('player_id1', $playerId)
+        $playerInTournamentTable = TournamentTable::where('player_id1', $playerId)
             ->orWhere('player_id2', $playerId)
             ->get();
 
         // Find player in TournamentTablemulti
-        $playerInTournamentTableMulti = TournamentTablemulti::where('tournament_id',$tournament_id)
-            ->orwhere('table_id',$table_id)
-            ->orwhere('player_id1', $playerId)
+        $playerInTournamentTableMulti = TournamentTablemulti::where('player_id1', $playerId)
             ->orWhere('player_id2', $playerId)
             ->orWhere('player_id3', $playerId)
             ->orWhere('player_id4', $playerId)
