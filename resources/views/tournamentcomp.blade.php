@@ -12,7 +12,7 @@ Ongoing Tournaments
   <div class="col-md-12 col-12">
     <div class="card">
       <div class="card-header">
-        <p class="card-title"><i class="las la-sliders-h"></i> Ongoing Tournaments </p>
+        <p class="card-title"><i class="las la-sliders-h"></i> Completed Tournaments </p>
         <form id="deleteAllForm" method="DELETE" action="{{ route('delete.all.tournaments') }}" data-parsley-validate autocomplete="off">
           @csrf
           <button class="btn btn-danger" type="submit">Delete All Tournaments</button>
@@ -75,15 +75,14 @@ Ongoing Tournaments
                         <th>time Start</th>
                         <th>Game Type</th>
                         <th>Entry Fee</th>
-                        <th>No of Tables</th>
                         <th>Tournament Details</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
-                      @foreach($ongoingtournaments as $key =>$result)
+                      @foreach($completedTournaments as $key =>$result)
                       <tr>
-                        <td><span class="font-weight-bold">{{ $ongoingtournaments->firstItem() + $key }}</span></td>
+                        <td><span class="font-weight-bold">{{ $completedTournaments->firstItem() + $key }}</span></td>
                         <td>{{ $result->tournament_id }}</td>
                         <td>{{ $result->tournament_name }}</td>
                         <td>{{ $result->prize_pool }} <i class="las la-rupee-sign"></i></td>
@@ -92,7 +91,6 @@ Ongoing Tournaments
                         <td>{{ $result->time_start }}</td>
                         <td>{{ $result->game_type }}</td>
                         <td>{{ $result->entry_fee }}</td>
-                        <td>{{ $result->nooftables }}</td>
                         <td>
                           <div class="dropdown">
                             <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu{{ $key }}" data-toggle="collapse" data-target="#collapseData{{ $key }}" aria-expanded="false" aria-controls="collapseData{{ $key }}">
@@ -228,7 +226,7 @@ Ongoing Tournaments
                 </div>
               </div>
               <div class="my-1">
-                {{ $tournaments->onEachSide(3)->links('vendor.pagination.custom') }}
+                {{ $completedTournaments->onEachSide(3)->links('vendor.pagination.custom') }}
               </div>
             </div>
           </div>

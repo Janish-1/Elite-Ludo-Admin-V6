@@ -76,6 +76,7 @@ $home = DB::table('homedetails')->first();
                 style="background: url('assets/img/hero-bottom-shape-2.svg')no-repeat bottom center"></div>
 
             <div class="container">
+                <br><br>
                 <div
                     class="row align-items-center justify-content-lg-between justify-content-md-center justify-content-sm-center">
                     <div class="col-md-12 col-lg-6">

@@ -73,7 +73,17 @@ class TournamentController extends Controller
                 Log::info("Assigned Tables for Tournament ID " . $tournamentId . ": " . json_encode($tournament->tables));
             }
 
+            return view("admin.Tournament.Tournament", compact('tournaments','ongoingtournaments'));
+        } catch (\Exception $e) {
+            // Handle the exception (e.g., log the error, display an error message)
+            Log::error("Error occurred: " . $e->getMessage());
+            return back()->withError($e->getMessage())->withErrors($e->getMessage());
+        }
+    }
 
+    public function index1()
+    {
+        try {
             $completedTournaments = Tournament::where('t_status', 'completed')->latest()->paginate(10);
 
             // Log the completed tournaments
@@ -94,7 +104,7 @@ class TournamentController extends Controller
                 Log::info("Assigned Tables for Completed Tournament ID " . $tournamentId . ": " . json_encode($completedTournament->tables));
             }
 
-            return view("admin.Tournament.Tournament", compact('tournaments', 'completedTournaments'));
+            return view("tournamentcomp", compact('completedTournaments'));
         } catch (\Exception $e) {
             // Handle the exception (e.g., log the error, display an error message)
             Log::error("Error occurred: " . $e->getMessage());

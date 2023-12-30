@@ -48,7 +48,7 @@ Ads Settings
                     <!-- general tab -->
                     <div role="tabpanel" class="tab-pane active" id="account-vertical-general" aria-labelledby="account-pill-general" aria-expanded="true">
                         <!-- form 1 -->
-                        <form id="#adForm1" class="general_setting" method="post" action="{{ route('update.Ad.imagea') }}" enctype="multipart/form-data" data-parsley-validate autocomplete="off">
+                        <form id="adForm1" class="general_setting" method="post" action="{{ route('update.Ad.imagea') }}" enctype="multipart/form-data" data-parsley-validate autocomplete="off">
                             @csrf
                             <div class="row">
                                 <div class="col-12">
@@ -73,7 +73,7 @@ Ads Settings
                     </div>
                     <div role="tabpanel" class="tab-pane active" id="account-vertical-general-2" aria-labelledby="account-pill-general-2" aria-expanded="true">
                         <!-- form 2 -->
-                        <form id="#adForm2" class="general_setting" method="post" action="{{ route('update.Ad.imageb') }}" enctype="multipart/form-data" data-parsley-validate autocomplete="off">
+                        <form id="adForm2" class="general_setting" method="post" action="{{ route('update.Ad.imageb') }}" enctype="multipart/form-data" data-parsley-validate autocomplete="off">
                             @csrf
                             <div class="row">
                                 <div class="col-12">
@@ -109,7 +109,7 @@ Ads Settings
 <script src="{{ URL::asset('admin-assets/css/custom/js/websitesetting/websitesetting.js') }}"></script>
 <script>
   $(document).ready(function() {
-    $('#adForm1').on('submit', function(e) {
+    $('#adForm1, #adForm2').on('submit', function(e) {
       e.preventDefault();
 
       $.ajax({
@@ -124,36 +124,7 @@ Ads Settings
         success: function(response) {
           // Handle success response
           console.log(response);
-          // Reload the page or perform any other action on success
-          location.reload();
-        },
-        error: function(xhr, status, error) {
-          // Handle error response
-          console.error(error);
-        }
-      });
-    });
-  });
-</script>
-<script>
-  $(document).ready(function() {
-    $('#adForm2').on('submit', function(e) {
-      e.preventDefault();
-
-      $.ajax({
-        url: $(this).attr('action'),
-        type: 'POST',
-        data: new FormData(this),
-        contentType: false,
-        processData: false,
-        headers: {
-          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        },
-        success: function(response) {
-          // Handle success response
-          console.log(response);
-          // Reload the page or perform any other action on success
-          location.reload();
+          // Perform any necessary actions with the response data
         },
         error: function(xhr, status, error) {
           // Handle error response
