@@ -97,6 +97,31 @@ Ads Settings
                         <!--/ form -->
                     </div>
                     <!--/ social -->
+                    <div role="tabpanel" class="tab-pane active" id="account-vertical-general-2" aria-labelledby="account-pill-general-2" aria-expanded="true">
+                        <!-- form 2 -->
+                        <form id="adForm3" class="general_setting" method="post" action="{{ route('update.Ad.imagec') }}" enctype="multipart/form-data" data-parsley-validate autocomplete="off">
+                            @csrf
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <i class="lab la-pagelines font-medium-3 mr-1"></i>
+                                        <h4 class="font-weight-bold mb-0 ml-75">Table Image</h4>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <small class="text-success">For Best Quality Upload 732x616 Pixels Image</small>
+                                    <div class="form-group">
+                                        <label class="form-label">Table Image</label>
+                                        <input type="file" accept="image/*" required class="dropify head_logo" name="ad" data-height="176" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary mt-2 mr-1 float-right">Update Table Image</button>
+                            </div>
+                        </form>
+                        <!--/ form -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -109,7 +134,7 @@ Ads Settings
 <script src="{{ URL::asset('admin-assets/css/custom/js/websitesetting/websitesetting.js') }}"></script>
 <script>
   $(document).ready(function() {
-    $('#adForm1, #adForm2').on('submit', function(e) {
+    $('#adForm1, #adForm2, $adForm3').on('submit', function(e) {
       e.preventDefault();
 
       $.ajax({

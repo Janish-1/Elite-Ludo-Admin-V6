@@ -39,6 +39,7 @@ class Userdata extends Model
            "ifsc",
            "in_game_status",
            "tournament_id",
-           "table_id",   
+           "table_id",
+           "bid_pay_status",    
     ];
 }

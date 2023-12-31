@@ -20,5 +20,6 @@ class Tournament extends Model
         "entry_fee",
         "nooftables",
         "t_status",
+        "rewards",
         ];
 }

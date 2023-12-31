@@ -68,6 +68,8 @@ Route::get('/tournament/onlytournament',[TournamentController::class,'findTourna
 
 Route::get('/tournament/alltournaments',[TournamentController::class,'findallTournaments']);
 
+Route::get('/tournament/activetournaments',[TournamentController::class,'findActiveTournaments']);
+
 Route::delete('/tournament/delete', [TournamentController::class, 'deleteTournamentDetails'])->name('delete.tournaments');
 
 Route::delete('/tournament/all/delete', [TournamentController::class, 'deleteAllTournaments'])->name('delete.all.tournaments');
@@ -94,13 +96,32 @@ Route::post('/ads/updateimage/a', [AdsController::class, 'UpdateAda'])->name('up
 
 Route::post('/ads/updateimage/b', [AdsController::class, 'UpdateAdb'])->name('update.Ad.imageb');
 
+Route::post('/ads/updateimage/c', [AdsController::class, 'UpdateAdc'])->name('update.Ad.imagec');
+
 Route::get('/getads',[AdsController::class, 'getAllAds']);
 
 Route::post('/tournament/winner',[TournamentController::class, 'tournamentwinner']);
 
+// Add Coins to TotalCoin
+Route::post('/addTotalCoin',[PlayerController::class, 'addTotalCoin']);
+
+// Get TotalCoin
+Route::get('/getTotalCoin',[PlayerController::class, 'getTotalCoin']);
+
+// Update TotalCoin
+Route::put('/updateTotalCoin',[PlayerController::class, 'updateTotalCoin']);
+
+// Reset TotalCoin
+Route::delete('/resetTotalCoin',[PlayerController::class, 'resetTotalCoin']);
+
+Route::post('/processplayerentry', [PlayerController::class, 'processPlayerFee']);
+
+Route::post('/process-all-players-entry', [PlayerController::class, 'processAllPlayersFee']);
+
 // This route is for payment initiate page
 
 Route::get('/razorpay/payment',[RazorpayController::class,'Initiate']);
+
 Route::post('/razorpay/payment/complete',[RazorpayController::class,'Complete']);
 
 

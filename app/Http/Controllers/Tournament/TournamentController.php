@@ -165,6 +165,16 @@ class TournamentController extends Controller
         ], 200);
     }
 
+    public function findActiveTournaments(Request $request)
+{
+    // Assuming 't_status' represents the column for the status of the tournament
+    $activeTournaments = Tournament::where('t_status', '!=', 'completed')->get();
+
+    return response()->json([
+        'active_tournaments' => $activeTournaments,
+    ], 200);
+}
+
     public function findTournamentDetails(Request $request)
     {
         $tournamentId = $request->input('tournament_id');
@@ -412,7 +422,7 @@ class TournamentController extends Controller
                 'in_game_status' => false,
                 'tournament_id' => null,
                 'table_id' => null,
-                // Additional columns to store current_table_id, etc.
+                'bid_pay_status'=>false,
             ]
         );
 
@@ -728,11 +738,41 @@ class TournamentController extends Controller
     {
         $tournamentId = $request->input('tournament_id');
         $playerId = $request->input('playerid');
-
-        // Update tournament status to 'completed' and set the winner
-        Tournament::where('tournament_id', $tournamentId)->update([
-            't_status' => 'completed',
-            'winner' => $playerId,
-        ]);
+    
+        // Find the tournament winner
+        $tournament = Tournament::where('tournament_id', $tournamentId)->first();
+    
+        if ($tournament) {
+            // Get the reward amount from the tournament
+            $reward = $tournament->rewards ?? 0;
+    
+            // Update the player's totalcoin by adding the reward
+            $player = Userdata::where('playerid', $playerId)->first();
+            if ($player) {
+                $player->totalcoin += $reward;
+                $player->wincoin += $reward;
+                $player->save();
+    
+                // Reset tournament status and winner
+                $tournament->t_status = 'completed';
+                $tournament->winner = $playerId;
+                $tournament->save();
+    
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Rewards transferred to the tournament winner successfully',
+                ], 200);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Player not found',
+                ], 404);
+            }
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tournament or winner not found or winner does not match',
+            ], 404);
+        }
     }
-}
+    }
