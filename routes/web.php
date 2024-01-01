@@ -99,7 +99,6 @@ Route::group(['middleware' => 'admin_auth'], function () {
 
         //now create bid coin value
         Route::get('/bid/coin', [BidConteoller::class, 'index']);
-        
         // Route to Create Tournament
         Route::post('/bid/coin/create', [BidConteoller::class, 'create'])->name('create.bidvalue.new');
         Route::post('/bid/coin/delete/{id}', [BidConteoller::class, 'delete']);

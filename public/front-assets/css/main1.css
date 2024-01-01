@@ -16288,7 +16288,7 @@ input[type="button"].btn-block {
   -webkit-box-pack: justify;
       -ms-flex-pack: justify;
           justify-content: space-between;
-  height: 120px;
+  height: 100px;
 }
 
 /* line 52, node_modules/bootstrap/scss/_navbar.scss */
@@ -16342,8 +16342,6 @@ input[type="button"].btn-block {
 
 /* line 109, node_modules/bootstrap/scss/_navbar.scss */
 .navbar-collapse {
-  /* #0E2036 #142847 */
-  background: linear-gradient(to right, #0E2036, #142847);
   -ms-flex-preferred-size: 100%;
       flex-basis: 100%;
   -webkit-box-flex: 1;
