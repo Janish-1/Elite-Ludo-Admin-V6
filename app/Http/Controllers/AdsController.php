@@ -4,6 +4,12 @@ namespace App\Http\Controllers;
 
 use Cloudinary\Configuration\Configuration;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use App\Models\ads;
+use PDO;
+use PDOException;
+use PDOStatement;
 
 Configuration::instance([
     'cloud' => [
@@ -15,14 +21,6 @@ Configuration::instance([
         'secure' => true
     ]
 ]);
-
-use Illuminate\Http\Request;
-
-use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
-use App\Models\ads;
-use PDO;
-use PDOException;
-use PDOStatement;
 
 class AdsController extends Controller
 {

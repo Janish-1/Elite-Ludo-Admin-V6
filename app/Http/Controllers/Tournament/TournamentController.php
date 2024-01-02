@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Tournament;
 
 use App\Http\Controllers\Controller;
 use App\Models\Tournament\Tournament;
-use App\Models\Tournament\TournamentTable; // Import the TournamentTable model
 use App\Models\Tournament\TournamentTablemulti; // Import the TournamentTable model
 use App\Models\Player\Userdata;
 use Illuminate\Http\Request;
@@ -42,7 +41,6 @@ class TournamentController extends Controller
 
                 // Assign tables to the specific tournament
                 $tournament->tables = $tables;
-
             }
 
             $ongoingtournaments = Tournament::where('t_status', 'ongoing')->latest()->paginate(10);
@@ -53,10 +51,9 @@ class TournamentController extends Controller
 
                 // Assign tables to the specific tournament
                 $tournament->tables = $tables;
-
             }
 
-            return view("admin.Tournament.Tournament", compact('tournaments','ongoingtournaments'));
+            return view("admin.Tournament.Tournament", compact('tournaments', 'ongoingtournaments'));
         } catch (\Exception $e) {
 
             // Handle the exception (e.g., log the error, display an error message)
@@ -80,7 +77,7 @@ class TournamentController extends Controller
 
             return view("tournamentcomp", compact('completedTournaments'));
         } catch (\Exception $e) {
-            
+
             // Handle the exception (e.g., log the error, display an error message)
             Log::error("Error occurred: " . $e->getMessage());
             return back()->withError($e->getMessage())->withErrors($e->getMessage());
@@ -105,13 +102,13 @@ class TournamentController extends Controller
 
         if ($tournament) {
             for ($i = 1; $i <= $tournament->nooftables; $i++) {
-                    // Create tables in TournamentTablemulti for '1v3' game type
-                    TournamentTablemulti::create([
-                        'tournament_id' => $tournamentId,
-                        'table_id' => $i,
-                        'game_name' => $tournament->tournament_name . ' ' . $i,
-                        'player_type' => $gameType,
-                    ]);
+                // Create tables in TournamentTablemulti for '1v3' game type
+                TournamentTablemulti::create([
+                    'tournament_id' => $tournamentId,
+                    'table_id' => $i,
+                    'game_name' => $tournament->tournament_name . ' ' . $i,
+                    'player_type' => $gameType,
+                ]);
             }
 
             return redirect('admin/tournament')->with('success', 'Tournament and tables created successfully.');
@@ -129,7 +126,7 @@ class TournamentController extends Controller
         ], 200);
     }
 
-        public function findActiveTournaments(Request $request)
+    public function findActiveTournaments(Request $request)
     {
         // Assuming 't_status' represents the column for the status of the tournament
         $activeTournaments = Tournament::where('t_status', '!=', 'completed')->get();
@@ -228,16 +225,19 @@ class TournamentController extends Controller
                 return response()->json(['message' => 'Table is full.'], 200);
             }
 
-            // Update user's status to indicate engagement in a game and set tournament_id and table_id
-            UserData::updateOrCreate(
+            // Find the user data or create a new record if it doesn't exist
+            $userData = UserData::updateOrCreate(
                 ['playerid' => $playerId],
                 [
                     'in_game_status' => true,
                     'tournament_id' => $tournamentId,
                     'table_id' => $tableId,
-                    // Additional columns to store current_table_id, etc.
                 ]
             );
+
+            // Increment the games_played field by 1
+            $userData->increment('GamePlayed');
+
             // Save changes to the table instance
             $table->save();
         } elseif ($tournament->player_type === '1v3') {
@@ -348,7 +348,7 @@ class TournamentController extends Controller
             ->get();
 
         if ($playerInTournamentTableMulti->isNotEmpty()) {
-            $playerFoundDetails['TournamentTablemulti'] = $playerInTournamentTableMulti->toArray();
+            $playerFoundDetails = $playerInTournamentTableMulti->toArray();
             $this->removePlayerFromTable($playerInTournamentTableMulti, $playerId);
         }
 
@@ -365,7 +365,7 @@ class TournamentController extends Controller
                 'in_game_status' => false,
                 'tournament_id' => null,
                 'table_id' => null,
-                'bid_pay_status'=>false,
+                'bid_pay_status' => false,
             ]
         );
 
@@ -451,20 +451,21 @@ class TournamentController extends Controller
 
         $tournament = $typeoftournament->first();
         $tournament_name = $tournament['tournament_name'];
+        $type = $tournament['player_type'];
 
         $winnersData = TournamentTablemulti::where('tournament_id', $tournamentId)
-                ->whereNotNull('winner') // Filter where winner is not null
-                ->get(['winner']);
+            ->whereNotNull('winner') // Filter where winner is not null
+            ->get(['winner']);
 
-            if ($winnersData->isEmpty()) {
-                return response()->json(['error' => 'No winners found for 1v1 tournament'], 404);
-            }
+        if ($winnersData->isEmpty()) {
+            return response()->json(['error' => 'No winners found for 1v1 tournament'], 404);
+        }
 
-            // Delete existing tables related to the tournament ID
-            TournamentTablemulti::where('tournament_id', $tournamentId)->delete();
+        // Delete existing tables related to the tournament ID
+        TournamentTablemulti::where('tournament_id', $tournamentId)->delete();
 
-            // Create empty tables for the next round
-            $this->createTablesForNextRound($tournamentId, $tournament_name, $ntables);
+        // Create empty tables for the next round
+        $this->createTablesForNextRound($tournamentId, $tournament_name, $ntables, $type);
 
         return response()->json([
             "message" => "Successfully Created the Next Round Data Table",
@@ -472,13 +473,14 @@ class TournamentController extends Controller
         ]);
     }
 
-    private function createTablesForNextRound($tournamentId, $tournament_name, $ntables)
+    private function createTablesForNextRound($tournamentId, $tournament_name, $ntables, $type)
     {
         for ($i = 0; $i < $ntables; $i++) {
             TournamentTablemulti::create([
                 'tournament_id' => $tournamentId,
                 'table_id' => $i + 1,
                 'game_name' => $tournament_name . ' ' . ($i + 1),
+                'player_type' => $type,
             ]);
         }
     }
@@ -487,14 +489,15 @@ class TournamentController extends Controller
     {
         $tournamentId = $request->input('tournament_id');
         $playerId = $request->input('playerid');
-    
+
         // Find the tournament winner
         $tournament = Tournament::where('tournament_id', $tournamentId)->first();
-    
+
         if ($tournament) {
             // Get the reward amount from the tournament
             $reward = $tournament->rewards ?? 0;
-    
+            $type = $tournament->player_type;
+
             // Update the player's totalcoin by adding the reward
             $player = Userdata::where('playerid', $playerId)->first();
             if ($player) {
@@ -504,12 +507,45 @@ class TournamentController extends Controller
                 $player->totalcoin += $reward;
                 $player->wincoin += $reward;
                 $player->save();
-    
+
                 // Reset tournament status and winner
                 $tournament->t_status = 'completed';
                 $tournament->winner = $playerId;
                 $tournament->save();
-    
+
+                if ($type === '1v1') {
+                    // Find or create a record for the player and increment twoPlayWin by 1
+                    $userData = Userdata::updateOrCreate(
+                        ['playerid' => $playerId],
+                        []
+                    );
+
+                    // Increment the twoPlayWin field by 1
+                    $userData->increment('twoPlayWin');
+                }
+
+                if ($type === '1v3') {
+                    // Find or create a record for the player and increment twoPlayWin by 1
+                    $userData = Userdata::updateOrCreate(
+                        ['playerid' => $playerId],
+                        []
+                    );
+
+                    // Increment the twoPlayWin field by 1
+                    $userData->increment('FourPlayWin');
+                }
+
+                // Update user's status to indicate engagement in a game and set tournament_id and table_id
+                UserData::updateOrCreate(
+                    ['playerid' => $playerId],
+                    [
+                        'in_game_status' => false,
+                        'tournament_id' => null,
+                        'table_id' => null,
+                        'bid_pay_status' => false,
+                    ]
+                );
+
                 return response()->json([
                     'success' => true,
                     'message' => 'Rewards transferred to the tournament winner successfully',
@@ -526,5 +562,73 @@ class TournamentController extends Controller
                 'message' => 'Tournament or winner not found or winner does not match',
             ], 404);
         }
+    }
+
+    public function playerlose(Request $request)
+    {
+        $playerId = $request->input('player_id');
+
+        // Check if the player ID is provided
+        if (!$playerId) {
+            return Response::json(['error' => 'Player ID is missing.'], 400);
+        }
+
+        $playerFoundDetails = [];
+
+        // Find player in TournamentTablemulti
+        $playerInTournamentTableMulti = TournamentTablemulti::where('player_id1', $playerId)
+            ->orWhere('player_id2', $playerId)
+            ->orWhere('player_id3', $playerId)
+            ->orWhere('player_id4', $playerId)
+            ->get();
+
+        if ($playerInTournamentTableMulti->isNotEmpty()) {
+            $playerFoundDetails = $playerInTournamentTableMulti->toArray();
+            $this->removePlayerFromTable($playerInTournamentTableMulti, $playerId);
+        }
+
+        if (!empty($playerFoundDetails)) {
+            $type = $playerFoundDetails[0]['player_type']; // Accessing player_type directly from the first element in the array
+            if ($type === '1v1') {
+                // Find or create a record for the player and increment twoPlayWin by 1
+                $userData = Userdata::updateOrCreate(
+                    ['playerid' => $playerId],
+                    []
+                );
+
+                // Increment the twoPlayWin field by 1
+                $userData->increment('twoPlayloss');
+            }
+
+            if ($type === '1v3') {
+                // Find or create a record for the player and increment twoPlayWin by 1
+                $userData = Userdata::updateOrCreate(
+                    ['playerid' => $playerId],
+                    []
+                );
+
+                // Increment the twoPlayWin field by 1
+                $userData->increment('FourPlayloss');
+            }
+        }
+
+        // You can then output the data in the response
+        $responseData = [
+            'player_id' => $playerId,
+            'player_found_details' => $playerFoundDetails,
+        ];
+
+        // Update user's status to indicate engagement in a game and set tournament_id and table_id
+        UserData::updateOrCreate(
+            ['playerid' => $playerId],
+            [
+                'in_game_status' => false,
+                'tournament_id' => null,
+                'table_id' => null,
+                'bid_pay_status' => false,
+            ]
+        );
+
+        return Response::json(['data' => $responseData], 200);
     }
 }

@@ -137,8 +137,8 @@ Ongoing Tournaments
                                 </thead>
                                 <tbody>
                                   @if(isset($result->tables) && !empty($result->tables))
-                                  @if(isset($result->tables['1v1']) && !$result->tables['1v1']->isEmpty())
-                                  @foreach($result->tables['1v1'] as $key => $table)
+                                  @if(isset($result->tables) && !$result->tables->isEmpty())
+                                  @foreach($result->tables as $key => $table)
                                   <tr>
                                     <td>{{ $key + 1 }}</td>
                                     <td>{{ $table->table_id ?? 'N/A' }}</td>
@@ -173,45 +173,6 @@ Ongoing Tournaments
                                     <td>{{ $table->created_at ?? 'N/A' }}</td>
                                   </tr>
                                   @endforeach
-                                  @else
-                                  @if(isset($result->tables['1v3']) && !$result->tables['1v3']->isEmpty())
-                                  @foreach($result->tables['1v3'] as $key => $table)
-                                  <tr>
-                                    <td>{{ $key + 1 }}</td>
-                                    <td>{{ $table->table_id ?? 'N/A' }}</td>
-                                    <td>{{ $table->game_name ?? 'N/A' }}</td>
-                                    <td>{{ $table->player_id1 ?? 'N/A' }}
-                                      <a href="{{url('admin/player/view/'.Crypt::encrypt($table->player_id1))}}">
-                                        <button type="button" data-toggle="tooltip" data-placement="top" title="View" class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton"><i class="las la-eye"></i>
-                                        </button>
-                                      </a>
-                                    </td>
-                                    <td>{{ $table->player_id2 ?? 'N/A' }}
-                                      <a href="{{url('admin/player/view/'.Crypt::encrypt($table->player_id2))}}">
-                                        <button type="button" data-toggle="tooltip" data-placement="top" title="View" class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton"><i class="las la-eye"></i>
-                                        </button>
-                                      </a>
-                                    </td>
-                                    <td>{{ $table->player_id3 ?? 'N/A' }}
-                                      <a href="{{url('admin/player/view/'.Crypt::encrypt($table->player_id3))}}">
-                                        <button type="button" data-toggle="tooltip" data-placement="top" title="View" class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton"><i class="las la-eye"></i>
-                                        </button>
-                                      </a>
-                                    </td>
-                                    <td>{{ $table->player_id4 ?? 'N/A' }}
-                                      <a href="{{url('admin/player/view/'.Crypt::encrypt($table->player_id4))}}">
-                                        <button type="button" data-toggle="tooltip" data-placement="top" title="View" class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton"><i class="las la-eye"></i>
-                                        </button>
-                                      </a>
-                                    </td>
-                                    <td>{{ $table->winner ?? 'N/A' }}</td>
-                                    <td>{{ $table->status ?? 'N/A' }}</td>
-                                    <td>{{ $table->updated_at ?? 'N/A' }}</td>
-                                    <td>{{ $table->created_at ?? 'N/A' }}</td>
-                                  </tr>
-
-                                  @endforeach
-                                  @endif
                                   @endif
                                   @endif
                                 </tbody>

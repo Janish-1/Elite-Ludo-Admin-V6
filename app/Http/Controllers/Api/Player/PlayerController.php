@@ -16,6 +16,23 @@ use Illuminate\Http\Request;
 use App\Models\Player\otp;
 use App\Models\Tournament\Tournament;
 
+use Cloudinary\Configuration\Configuration;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use PDO;
+use PDOException;
+use PDOStatement;
+
+Configuration::instance([
+    'cloud' => [
+        'cloud_name' => 'df6mzmw3v',
+        'api_key' => '288424958781825',
+        'api_secret' => 'i7h7hexaT4aHPXJjawSBfkoyHWs'
+    ],
+    'url' => [
+        'secure' => true
+    ]
+]);
+
 class PlayerController extends Controller
 {
     public function CreatePlayer(Request $request)
@@ -119,31 +136,58 @@ class PlayerController extends Controller
 
     public function PlayerProfileIMGUpdate(Request $request)
     {
-
-        if ($request->profile_img) {
-            $fileName = $request->file("profile_img");
-            $path = $fileName->getClientOriginalName();
-            $imagePath = $fileName->storeAs("public/Profile", $path, "local");
-            $imagePath = str_replace("public/Profile", "", $imagePath);
-            $data["profile_img"] = $imagePath;
-
-            $response = Userdata::where('playerid', $request->playerid)->update(array(
-                "photo" => $imagePath,
-            ));
-
-            if ($response) {
-                $response = ['notice' => 'Image Updated'];
-                return response($response, 200);
-            } else {
-                $response = ['notice' => 'Image Not Updated'];
-                return response($response, 200);
+        $playerid = $request->input('playerid');
+    
+        if ($request->hasFile('profile_img')) {
+            try {
+                $response = Cloudinary::upload($request->file('profile_img')->getRealPath())->getSecurePath();
+    
+                $pdo = new PDO(
+                    "mysql:host=" . env('DB_HOST') . ";dbname=" . env('DB_DATABASE'),
+                    env('DB_USERNAME'),
+                    env('DB_PASSWORD')
+                );
+                $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+                $sql = "UPDATE userdatas SET photo = :photo WHERE playerid = :playerid";
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute(['photo' => $response, 'playerid' => $playerid]);
+    
+                if ($stmt->rowCount() > 0) {
+                    $response = ['notice' => 'Image Updated'];
+                    return response()->json($response, 200);
+                } else {
+                    $response = ['notice' => 'Image Not Updated'];
+                    return response()->json($response, 400);
+                }
+            } catch (PDOException $e) {
+                $response = ['notice' => 'Database Error: ' . $e->getMessage()];
+                return response()->json($response, 500);
+            } catch (\Exception $e) {
+                $response = ['notice' => 'Cloudinary Error: ' . $e->getMessage()];
+                return response()->json($response, 500);
             }
         } else {
             $response = ['notice' => 'Image Not Received'];
-            return response($response, 200);
+            return response()->json($response, 400);
         }
     }
+    
 
+    public function PlayerProfile(Request $request)
+    {
+        $playerId = $request->input('playerid');
+
+        $data = Userdata::where('playerid', $playerId)->first();
+        $photo = $data->photo;
+
+        if ($photo) {
+            return response()->json(['success' => true, 'photo' => $photo], 200);
+        } else {
+            // Handle the case when no data is found for the playerid
+            return response()->json(['success' => false, 'notice' => 'Data Not Found'], 404);
+        }
+    }
 
     //now check mobile regisyter user
 

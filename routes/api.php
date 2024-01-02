@@ -40,6 +40,8 @@ Route::post('/player/details',[PlayerController::class,'PlayerDeatils']);
 
 Route::post('/player/profile/image/update',[PlayerController::class,'PlayerProfileIMGUpdate']);
 
+Route::post('/player/profile/image',[PlayerController::class,'PlayerProfile']);
+
 Route::post('/join/game',[GameManagerController::class,'JoinGame']);
 
 Route::post('/gameplay/status',[GameManagerController::class,'GameStatus']);
@@ -117,6 +119,8 @@ Route::delete('/resetTotalCoin',[PlayerController::class, 'resetTotalCoin']);
 Route::post('/processplayerentry', [PlayerController::class, 'processPlayerFee']);
 
 Route::post('/process-all-players-entry', [PlayerController::class, 'processAllPlayersFee']);
+
+Route::post('/tournament/playerlose', [TournamentController::class, 'playerlose']);
 
 // This route is for payment initiate page
 
