@@ -17,7 +17,7 @@ class Withdraw extends Model
         "bank_name",
         "account_number",
         "ifsc_code",
-        "withdrawstatus",
+        "status",
         "transaction_id",
         "created_at",
         ];

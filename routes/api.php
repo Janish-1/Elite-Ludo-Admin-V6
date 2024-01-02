@@ -122,6 +122,12 @@ Route::post('/process-all-players-entry', [PlayerController::class, 'processAllP
 
 Route::post('/tournament/playerlose', [TournamentController::class, 'playerlose']);
 
+Route::post('/createwithdraw',[PlayerController::class, 'createWithdraw']);
+
+Route::post('/approvewithdraw',[PlayerController::class, 'approveWithdraw']);
+
+Route::post('/rejectwithdraw',[PlayerController::class, 'rejectWithdraw']);
+
 // This route is for payment initiate page
 
 Route::get('/razorpay/payment',[RazorpayController::class,'Initiate']);

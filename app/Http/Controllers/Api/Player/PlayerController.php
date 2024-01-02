@@ -15,6 +15,8 @@ use Illuminate\Support\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Player\otp;
 use App\Models\Tournament\Tournament;
+use Illuminate\Support\Facades\Validator;
+use App\Models\Withdraw\Withdraw;
 
 use Cloudinary\Configuration\Configuration;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
@@ -137,22 +139,22 @@ class PlayerController extends Controller
     public function PlayerProfileIMGUpdate(Request $request)
     {
         $playerid = $request->input('playerid');
-    
+
         if ($request->hasFile('profile_img')) {
             try {
                 $response = Cloudinary::upload($request->file('profile_img')->getRealPath())->getSecurePath();
-    
+
                 $pdo = new PDO(
                     "mysql:host=" . env('DB_HOST') . ";dbname=" . env('DB_DATABASE'),
                     env('DB_USERNAME'),
                     env('DB_PASSWORD')
                 );
                 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-    
+
                 $sql = "UPDATE userdatas SET photo = :photo WHERE playerid = :playerid";
                 $stmt = $pdo->prepare($sql);
                 $stmt->execute(['photo' => $response, 'playerid' => $playerid]);
-    
+
                 if ($stmt->rowCount() > 0) {
                     $response = ['notice' => 'Image Updated'];
                     return response()->json($response, 200);
@@ -172,7 +174,7 @@ class PlayerController extends Controller
             return response()->json($response, 400);
         }
     }
-    
+
 
     public function PlayerProfile(Request $request)
     {
@@ -490,120 +492,217 @@ class PlayerController extends Controller
     {
         $playerId = $request->input('playerid');
         $tournamentId = $request->input('tournamentid');
-    
+
         if (!$tournamentId || !$playerId) {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid input data: tournamentid and playerid are required',
             ], 400);
         }
-    
+
         $player = Userdata::where('playerid', $playerId)
             ->where('tournament_id', $tournamentId)
             ->first();
-    
+
         $tournament = Tournament::where('tournament_id', $tournamentId)->first();
-    
+
         if (!$player || !$tournament) {
             return response()->json([
                 'success' => false,
                 'message' => 'Player or Tournament not found',
             ], 404);
         }
-    
+
         if ($player->in_game_status === 1 || $player->bid_pay_status === 0) {
             return response()->json([
                 'success' => false,
                 'message' => 'Player is not eligible to enter the tournament',
             ], 400);
         }
-    
+
         $entryFee = $tournament->entry_fee ?? 0;
-    
+
         if ($player->totalcoin < $entryFee) {
             return response()->json([
                 'success' => false,
                 'message' => 'Insufficient coins to enter the tournament',
             ], 400);
         }
-    
+
         // Deduct entry fee from the player's total coins
         $player->totalcoin -= $entryFee;
-    
+
         // Set bid_pay_status to 1
         $player->bid_pay_status = 1;
-    
+
         // Save changes to the player's data
         $player->save();
-    
+
         // Append entry fee to the tournament's rewards
         $tournament->rewards += $entryFee;
         $tournament->save();
-    
+
         return response()->json([
             'success' => true,
             'message' => 'Player entered into the tournament successfully',
         ], 200);
-    }    
+    }
 
     public function processAllPlayersFee(Request $request)
     {
         $tournamentId = $request->input('tournamentid');
-    
+
         if (!$tournamentId) {
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid tournamentid',
             ], 400);
         }
-    
+
         $tournament = Tournament::where('tournament_id', $tournamentId)->first();
-    
+
         if (!$tournament) {
             return response()->json([
                 'success' => false,
                 'message' => 'Tournament not found',
             ], 404);
         }
-    
+
         $entryFee = $tournament->entry_fee ?? 0;
-    
+
         // Fetch all players for the specified tournament
         $players = Userdata::where('tournament_id', $tournamentId)
-                            ->where('in_game_status', 1)
-                            ->where(function ($query) {
-                                $query->where('bid_pay_status', 0)
-                                      ->orWhereNull('bid_pay_status');
-                            })
-                            ->where('totalcoin', '>=', $entryFee)
-                            ->get();
-    
+            ->where('in_game_status', 1)
+            ->where(function ($query) {
+                $query->where('bid_pay_status', 0)
+                    ->orWhereNull('bid_pay_status');
+            })
+            ->where('totalcoin', '>=', $entryFee)
+            ->get();
+
         if ($players->isEmpty()) {
             return response()->json([
                 'success' => false,
                 'message' => 'No eligible players found for entry fee deduction',
             ], 404);
         }
-    
+
         foreach ($players as $player) {
             // Deduct entry fee from the player's total coins
             $player->totalcoin -= $entryFee;
-    
+
             // Set bid_pay_status to 1
             $player->bid_pay_status = 1;
-    
+
             // Save changes to the player's data
             $player->save();
-    
+
             // Append entry fee to the tournament's rewards
             $tournament->rewards += $entryFee;
         }
-    
+
         $tournament->save();
-    
+
         return response()->json([
             'success' => true,
             'message' => 'Entry fees processed for all eligible players in the tournament',
         ], 200);
+    }
+
+    public function createWithdraw(Request $request)
+    {
+        // Validation rules for all required fields
+        $rules = [
+            'userid' => 'required',
+            'amount' => 'required|numeric|min:0',
+            'payment_method' => 'required',
+            'wallet_number' => 'required',
+            'bank_name' => 'required',
+            'account_number' => 'required',
+            'ifsc_code' => 'required',
+        ];
+
+        // Validate incoming request data
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors(),
+            ], 400);
+        }
+
+        try {
+            // Extract validated data from the request
+            $validatedData = $validator->validated();
+
+            // Generate a random 8-digit number for transaction_id
+            $validatedData['transaction_id'] = str_pad(mt_rand(1, 99999999), 8, '0', STR_PAD_LEFT);
+
+            // Create a new withdraw entry using the Withdraw model
+            $withdraw = Withdraw::create($validatedData);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Withdraw entry created successfully',
+                'data' => $withdraw,
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to create withdraw entry',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function approveWithdraw(Request $request)
+    {
+        $transaction_id = $request->input('transaction_id');
+    
+        try {
+            // Find the withdrawal entry by transaction ID
+            $withdraw = Withdraw::where('transaction_id', $transaction_id)->firstOrFail();
+    
+            // Update withdrawstatus to '1' for approval
+            $withdraw->update(['status' => '1']);
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Withdrawal approved successfully',
+                'data' => $withdraw,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to approve withdrawal',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+    
+    public function rejectWithdraw(Request $request)
+    {
+        $transaction_id = $request->input('transaction_id');
+    
+        try {
+            // Find the withdrawal entry by transaction ID
+            $withdraw = Withdraw::where('transaction_id', $transaction_id)->firstOrFail();
+    
+            // Update withdrawstatus to '0' for rejection
+            $withdraw->update(['status' => '0']);
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'Withdrawal rejected successfully',
+                'data' => $withdraw,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to reject withdrawal',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 }
