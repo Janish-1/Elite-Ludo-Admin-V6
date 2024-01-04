@@ -8,7 +8,7 @@ use Razorpay\Api\Api;
 use App\Models\Transaction\Transaction;
 use Throwable; // Import Throwable
 
-class CompleteController extends Controller
+class complete extends Controller
 {
     public function completePay(Request $request)
     {

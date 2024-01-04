@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Shopcoin\ShopcoinController;
 use App\Http\Controllers\AdsController;
 use App\Http\Controllers\paymentgateway\initiate;
-use App\Http\Controllers\paymentgateway\CompleteController;
+use App\Http\Controllers\paymentgateway\complete;
 
 /*
 |--------------------------------------------------------------------------
@@ -132,7 +132,7 @@ Route::post('/rejectwithdraw',[PlayerController::class, 'rejectWithdraw']);
 
 Route::post('/paymentinitiate',[initiate::class, 'createpaymentreq']);
 
-Route::post('/paymentcomplete',[CompleteController::class, 'completePay']);
+Route::post('/paymentcomplete',[complete::class, 'completePay']);
 
 // This route is for payment initiate page
 
@@ -140,4 +140,6 @@ Route::get('/razorpay/payment',[RazorpayController::class,'Initiate']);
 
 Route::post('/razorpay/payment/complete',[RazorpayController::class,'Complete']);
 
+Route::post('/paymentsuccess',[complete::class,'completePay']);
 
+Route::post('/testpayment',[initiate::class,'createpaymentreq']);

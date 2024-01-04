@@ -22,7 +22,8 @@ use App\Http\Controllers\Addcoin\AddCoinController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdsController;
-use App\Http\Controllers\paymentgateway\CompleteController;
+use App\Http\Controllers\paymentgateway\complete;
+use App\Http\Controllers\paymentgateway\initiate;
 
 /*
 |--------------------------------------------------------------------------
@@ -271,4 +272,6 @@ Route::get('payment/failed', function () {
 });
 
 
-Route::post('/paymentsuccess',[CompleteController::class,'completePay']);
+Route::post('/paymentsuccess',[complete::class,'completePay']);
+
+Route::post('/testpayment',[initiate::class,'createpaymentreq']);
