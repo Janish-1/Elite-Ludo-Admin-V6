@@ -690,7 +690,7 @@ class PlayerController extends Controller
             $withdraw = Withdraw::where('transaction_id', $transaction_id)->firstOrFail();
     
             // Update withdrawstatus to '0' for rejection
-            $withdraw->update(['status' => '0']);
+            $withdraw->update(['status' => '2']);
     
             return response()->json([
                 'success' => true,

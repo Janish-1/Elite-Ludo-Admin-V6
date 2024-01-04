@@ -9,6 +9,8 @@ use App\Http\Controllers\Api\Player\GameManagerController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Shopcoin\ShopcoinController;
 use App\Http\Controllers\AdsController;
+use App\Http\Controllers\paymentgateway\initiate;
+use App\Http\Controllers\paymentgateway\CompleteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -127,6 +129,10 @@ Route::post('/createwithdraw',[PlayerController::class, 'createWithdraw']);
 Route::post('/approvewithdraw',[PlayerController::class, 'approveWithdraw']);
 
 Route::post('/rejectwithdraw',[PlayerController::class, 'rejectWithdraw']);
+
+Route::post('/paymentinitiate',[initiate::class, 'createpaymentreq']);
+
+Route::post('/paymentcomplete',[CompleteController::class, 'completePay']);
 
 // This route is for payment initiate page
 

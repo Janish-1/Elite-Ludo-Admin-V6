@@ -22,6 +22,7 @@ use App\Http\Controllers\Addcoin\AddCoinController;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdsController;
+use App\Http\Controllers\paymentgateway\CompleteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -264,8 +265,10 @@ Route::post('/cashfree/payment/success',[CashfreeController::class,'PaymentSucce
 Route::get('payment/success', function () {
     return view("admin.Razorpay.PaymentSuccess");
 });
+
 Route::get('payment/failed', function () {
     return view("admin.Razorpay.PaymentFaield");
 });
 
 
+Route::post('/paymentsuccess',[CompleteController::class,'completePay']);

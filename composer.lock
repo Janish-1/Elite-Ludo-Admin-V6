@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ed6234b8e9697cb92e072ed8a6152353",
+    "content-hash": "fe802e73617f7c0a8a0c7244de1aae62",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -2983,16 +2983,16 @@
         },
         {
             "name": "razorpay/razorpay",
-            "version": "2.7.0",
+            "version": "v2.8.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/razorpay/razorpay-php.git",
-                "reference": "e28454acdc110b544fc80bec9518b9b86b275a2c"
+                "reference": "f36ad5ec74522d2930ffad3b160dddc454e42f4d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/razorpay/razorpay-php/zipball/e28454acdc110b544fc80bec9518b9b86b275a2c",
-                "reference": "e28454acdc110b544fc80bec9518b9b86b275a2c",
+                "url": "https://api.github.com/repos/razorpay/razorpay-php/zipball/f36ad5ec74522d2930ffad3b160dddc454e42f4d",
+                "reference": "f36ad5ec74522d2930ffad3b160dddc454e42f4d",
                 "shasum": ""
             },
             "require": {
@@ -3041,7 +3041,7 @@
                 "issues": "https://github.com/Razorpay/razorpay-php/issues",
                 "source": "https://github.com/Razorpay/razorpay-php"
             },
-            "time": "2021-05-07T11:30:17+00:00"
+            "time": "2022-03-08T13:36:42+00:00"
         },
         {
             "name": "rmccue/requests",

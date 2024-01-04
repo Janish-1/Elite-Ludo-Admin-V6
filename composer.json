@@ -17,7 +17,7 @@
         "laravel/sanctum": "^2.15",
         "laravel/tinker": "^2.5",
         "loveycom/cashfree": "^2.1",
-        "razorpay/razorpay": "^2.7",
+        "razorpay/razorpay": "2.*",
         "srmklive/paypal": "~1.0"
     },
     "require-dev": {
