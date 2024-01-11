@@ -16308,17 +16308,33 @@ input[type="button"].btn-block {
 }
 
 /* line 71, node_modules/bootstrap/scss/_navbar.scss */
-.navbar-nav {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-          flex-direction: column;
-  padding-left: 0;
-  margin-bottom: 0;
-  list-style: none;
+
+@media screen and (max-width: 997px) {
+  .navbar-nav {
+    background: linear-gradient(75deg, #0a2538, #1f3f72);
+  }
+}
+
+@media screen and (min-width: 998px) {
+  .navbar-nav {
+    background: none; /* or any other background style you want for screens >= 998px */
+  }
+}
+
+/* Additional styles for common properties */
+@media screen {
+  .navbar-nav {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    padding-left: 0;
+    margin-bottom: 0;
+    list-style: none;
+  }
 }
 
 /* line 78, node_modules/bootstrap/scss/_navbar.scss */

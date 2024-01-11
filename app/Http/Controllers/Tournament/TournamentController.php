@@ -96,7 +96,7 @@ class TournamentController extends Controller
         $gameType = $tournamentData['player_type']; // Assuming 'game_type' is present in $tournamentData
 
         // Generate a unique random tournament ID with up to 5 characters
-        $tournamentId = Str::random(3);
+        $tournamentId = Str::random(6);
 
         $tournament = Tournament::create(array_merge($tournamentData, ['tournament_id' => $tournamentId]));
 
@@ -398,42 +398,51 @@ class TournamentController extends Controller
     public function playerwin(Request $request)
     {
         $playerId = $request->input('player_id');
-
+    
         // Check if the player ID is provided
         if (!$playerId) {
             return Response::json(['error' => 'Player ID is missing.'], 400);
         }
-
-        $playerFoundDetails = [];
-
+    
         // Find player in TournamentTablemulti
         $playerInTournamentTableMulti = TournamentTablemulti::where('player_id1', $playerId)
             ->orWhere('player_id2', $playerId)
             ->orWhere('player_id3', $playerId)
             ->orWhere('player_id4', $playerId)
             ->get();
-
+    
         if ($playerInTournamentTableMulti->isNotEmpty()) {
             foreach ($playerInTournamentTableMulti as $tournamentMulti) {
                 $tournamentIdMulti = $tournamentMulti->tournament_id;
                 $tableIdMulti = $tournamentMulti->table_id;
-
+    
+                // Remove player from the table
+                $this->removePlayerFromTable([$tournamentMulti], $playerId);
+    
+                // Update player in UserData table without changing bid_pay_status
+                UserData::updateOrCreate(
+                    ['playerid' => $playerId],
+                    [
+                        'table_id' => null,
+                    ]
+                );
+    
                 // Update the winner in TournamentTablemulti
                 TournamentTablemulti::where('tournament_id', $tournamentIdMulti)
                     ->where('table_id', $tableIdMulti)
                     ->update(['winner' => $playerId]);
             }
         }
-
+    
         // You can then output the data in the response
         $responseData = [
             'player_id' => $playerId,
             'Added_to_Winner' => true,
         ];
-
+    
         return Response::json($responseData);
     }
-
+    
     public function nextround(Request $request)
     {
         $tournamentId = $request->input('tournament_id');

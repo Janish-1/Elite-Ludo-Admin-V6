@@ -41,7 +41,6 @@ class PlayerController extends Controller
     return view('admin.Player.PlayerDetails', compact('data', 'NoOfWithdraw', 'withdrawAmount', 'TotalTrans', 'TotalSuccessTrans', 'TotalFailedTrans', 'Websetting'));
   }
 
-
   public function AddCoin(Request $request)
   {
     $UserData = Userdata::where('playerid', $request->PlayerID)->first();
