@@ -249,7 +249,7 @@ $home = DB::table('homedetails')->first();
         </section>
         <!--download section step end-->
         <!--faq or accordion section start-->
-        <section id="faq" class="ptb-100 ">
+        <section id="faq" class="ptb-100">
             <div class="container">
                 <div class="row justify-content-center">
                     <div class="col-md-9 col-lg-8">
