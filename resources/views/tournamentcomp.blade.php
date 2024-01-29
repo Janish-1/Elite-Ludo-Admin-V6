@@ -75,7 +75,6 @@ Ongoing Tournaments
                         <th>time Start</th>
                         <th>Game Type</th>
                         <th>Entry Fee</th>
-                        <th>Tournament Details</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
@@ -92,93 +91,11 @@ Ongoing Tournaments
                         <td>{{ $result->game_type }}</td>
                         <td>{{ $result->entry_fee }}</td>
                         <td>
-                          <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu{{ $key }}" data-toggle="collapse" data-target="#collapseData{{ $key }}" aria-expanded="false" aria-controls="collapseData{{ $key }}">
-                              v
-                            </button>
-                          </div>
-                        </td>
-                        <td>
                           <form method="POST" action="{{ route('delete.tournaments', ['tournament_id' => $result->tournament_id]) }}">
                             @csrf <!-- CSRF protection for POST requests -->
                             @method('DELETE') <!-- Method spoofing for DELETE request -->
                             <button type="submit" class="btn btn-danger">Delete</button>
                           </form>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td colspan="11" class="p-0">
-                          <div class="collapse" id="collapseData{{ $key }}">
-                            <div class="card card-body">
-                              <p>
-                                <strong>Tournament ID:</strong> {{ $result->tournament_id }}<br>
-                                <strong>Tournament Name:</strong> {{ $result->tournament_name }}<br>
-                                <strong>Prize Pool:</strong> {{ $result->prize_pool }}<br>
-                                <!-- Display other tournament details -->
-                              </p>
-                              <br>
-                              <strong>Tables:</strong><br>
-
-                              <table class="table">
-                                <thead>
-                                  <tr>
-                                    <th>#</th>
-                                    <th>Table ID</th>
-                                    <th>Game Name</th>
-                                    <th>Player ID 1</th>
-                                    <th>Player ID 2</th>
-                                    <th>Player ID 3</th>
-                                    <th>Player ID 4</th>
-                                    <th>Winner</th>
-                                    <th>Status</th>
-                                    <th>Updated At</th>
-                                    <th>Created At</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  @if(isset($result->tables) && !empty($result->tables))
-                                  @if(isset($result->tables) && !$result->tables->isEmpty())
-                                  @foreach($result->tables as $key => $table)
-                                  <tr>
-                                    <td>{{ $key + 1 }}</td>
-                                    <td>{{ $table->table_id ?? 'N/A' }}</td>
-                                    <td>{{ $table->game_name ?? 'N/A' }}</td>
-                                    <td>{{ $table->player_id1 ?? 'N/A' }}
-                                      <a href="{{url('admin/player/view/'.Crypt::encrypt($table->player_id1))}}">
-                                        <button type="button" data-toggle="tooltip" data-placement="top" title="View" class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton"><i class="las la-eye"></i>
-                                        </button>
-                                      </a>
-                                    </td>
-                                    <td>{{ $table->player_id2 ?? 'N/A' }}
-                                      <a href="{{url('admin/player/view/'.Crypt::encrypt($table->player_id2))}}">
-                                        <button type="button" data-toggle="tooltip" data-placement="top" title="View" class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton"><i class="las la-eye"></i>
-                                        </button>
-                                      </a>
-                                    </td>
-                                    <td>{{ $table->player_id3 ?? 'N/A' }}
-                                      <a href="{{url('admin/player/view/'.Crypt::encrypt($table->player_id3))}}">
-                                        <button type="button" data-toggle="tooltip" data-placement="top" title="View" class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton"><i class="las la-eye"></i>
-                                        </button>
-                                      </a>
-                                    </td>
-                                    <td>{{ $table->player_id4 ?? 'N/A' }}
-                                      <a href="{{url('admin/player/view/'.Crypt::encrypt($table->player_id4))}}">
-                                        <button type="button" data-toggle="tooltip" data-placement="top" title="View" class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton"><i class="las la-eye"></i>
-                                        </button>
-                                      </a>
-                                    </td>
-                                    <td>{{ $table->winner ?? 'N/A' }}</td>
-                                    <td>{{ $table->status ?? 'N/A' }}</td>
-                                    <td>{{ $table->updated_at ?? 'N/A' }}</td>
-                                    <td>{{ $table->created_at ?? 'N/A' }}</td>
-                                  </tr>
-                                  @endforeach
-                                  @endif
-                                  @endif
-                                </tbody>
-                              </table>
-                            </div>
-                          </div>
                         </td>
                       </tr>
                       @endforeach

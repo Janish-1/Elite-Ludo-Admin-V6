@@ -13,11 +13,13 @@ Ongoing Tournaments
     <div class="card">
       <div class="card-header">
         <p class="card-title"><i class="las la-sliders-h"></i> Ongoing Tournaments </p>
-        <form id="deleteAllForm" method="DELETE" action="{{ route('delete.all.tournaments') }}" data-parsley-validate autocomplete="off">
+        <form id="deleteAllForm" method="DELETE" action="{{ route('delete.all.tournaments') }}" data-parsley-validate
+          autocomplete="off">
           @csrf
           <button class="btn btn-danger" type="submit">Delete All Tournaments</button>
         </form>
-        <a href="{{url('/')}}/admin/tournament/add"><button class="btn btn-orange border-0 round"><i class="las la-plus-circle"></i> Add New Tournament</button></a>
+        <a href="{{url('/')}}/admin/tournament/add"><button class="btn btn-orange border-0 round"><i
+              class="las la-plus-circle"></i> Add New Tournament</button></a>
       </div>
       @if(session()->get('error'))
       <div class="alert alert-danger alert-dismissible ml-1 mr-1" id="notice_msg" role="alert">
@@ -60,7 +62,8 @@ Ongoing Tournaments
       <div class="card">
         <div class="card-body">
           <div class="tab-content">
-            <div role="tabpanel" class="tab-pane active" id="ongoing-tournaments" aria-labelledby="account-pill-general" aria-expanded="true">
+            <div role="tabpanel" class="tab-pane active" id="ongoing-tournaments" aria-labelledby="account-pill-general"
+              aria-expanded="true">
               <div class="card-body">
                 <div class="table-responsive">
                   <table class="table">
@@ -95,13 +98,16 @@ Ongoing Tournaments
                         <td>{{ $result->nooftables }}</td>
                         <td>
                           <div class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu{{ $key }}" data-toggle="collapse" data-target="#collapseData{{ $key }}" aria-expanded="false" aria-controls="collapseData{{ $key }}">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenu{{ $key }}"
+                              data-toggle="collapse" data-target="#collapseData{{ $key }}" aria-expanded="false"
+                              aria-controls="collapseData{{ $key }}">
                               v
                             </button>
                           </div>
                         </td>
                         <td>
-                          <form method="POST" action="{{ route('delete.tournaments', ['tournament_id' => $result->tournament_id]) }}">
+                          <form method="POST"
+                            action="{{ route('delete.tournaments', ['tournament_id' => $result->tournament_id]) }}">
                             @csrf <!-- CSRF protection for POST requests -->
                             @method('DELETE') <!-- Method spoofing for DELETE request -->
                             <button type="submit" class="btn btn-danger">Delete</button>
@@ -145,30 +151,63 @@ Ongoing Tournaments
                                     <td>{{ $key + 1 }}</td>
                                     <td>{{ $table->table_id ?? 'N/A' }}</td>
                                     <td>{{ $table->game_name ?? 'N/A' }}</td>
-                                    <td>{{ $table->player_id1 ?? 'N/A' }}
-                                      <a href="{{url('admin/player/view/'.Crypt::encrypt($table->player_id1))}}">
-                                        <button type="button" data-toggle="tooltip" data-placement="top" title="View" class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton"><i class="las la-eye"></i>
+                                    @if($table->player_id1)
+                                    <td>
+                                      {{ $table->player_id1 }}
+                                      <a href="{{ url('admin/player/view/' . Crypt::encrypt($table->player_id1)) }}">
+                                        <button type="button" data-toggle="tooltip" data-placement="top" title="View"
+                                          class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton">
+                                          <i class="las la-eye"></i>
                                         </button>
                                       </a>
                                     </td>
+                                    @else
+                                    <td>
+                                      N/A
+                                    </td>
+                                    @endif
+                                    @if($table->player_id2)
                                     <td>{{ $table->player_id2 ?? 'N/A' }}
                                       <a href="{{url('admin/player/view/'.Crypt::encrypt($table->player_id2))}}">
-                                        <button type="button" data-toggle="tooltip" data-placement="top" title="View" class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton"><i class="las la-eye"></i>
+                                        <button type="button" data-toggle="tooltip" data-placement="top" title="View"
+                                          class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton"><i
+                                            class="las la-eye"></i>
                                         </button>
                                       </a>
                                     </td>
+                                    @else
+                                    <td>
+                                      N/A
+                                    </td>
+                                    @endif
+                                    @if($table->player_id3)
                                     <td>{{ $table->player_id3 ?? 'N/A' }}
                                       <a href="{{url('admin/player/view/'.Crypt::encrypt($table->player_id3))}}">
-                                        <button type="button" data-toggle="tooltip" data-placement="top" title="View" class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton"><i class="las la-eye"></i>
+                                        <button type="button" data-toggle="tooltip" data-placement="top" title="View"
+                                          class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton"><i
+                                            class="las la-eye"></i>
                                         </button>
                                       </a>
                                     </td>
+                                    @else
+                                    <td>
+                                      N/A
+                                    </td>
+                                    @endif
+                                    @if($table->player_id4)
                                     <td>{{ $table->player_id4 ?? 'N/A' }}
                                       <a href="{{url('admin/player/view/'.Crypt::encrypt($table->player_id4))}}">
-                                        <button type="button" data-toggle="tooltip" data-placement="top" title="View" class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton"><i class="las la-eye"></i>
+                                        <button type="button" data-toggle="tooltip" data-placement="top" title="View"
+                                          class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton"><i
+                                            class="las la-eye"></i>
                                         </button>
                                       </a>
                                     </td>
+                                    @else
+                                    <td>
+                                      N/A
+                                    </td>
+                                    @endif
                                     <td>{{ $table->winner ?? 'N/A' }}</td>
                                     <td>{{ $table->status ?? 'N/A' }}</td>
                                     <td>{{ $table->updated_at ?? 'N/A' }}</td>
@@ -203,8 +242,8 @@ Ongoing Tournaments
 @endsection
 @section('js')
 <script>
-  $(document).ready(function() {
-    $('#deleteButton').on('click', function(e) {
+  $(document).ready(function () {
+    $('#deleteButton').on('click', function (e) {
       e.preventDefault();
 
       var tournamentId = $('#tournamentId').val(); // Replace this with how you fetch the tournament ID from your form
@@ -215,7 +254,7 @@ Ongoing Tournaments
         headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         },
-        success: function(response) {
+        success: function (response) {
           // Handle success response
           console.log(response);
           // Check if the deletion was successful
@@ -226,7 +265,7 @@ Ongoing Tournaments
             console.log('Deletion unsuccessful.');
           }
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
           // Handle error response
           console.error(error);
         }
@@ -237,8 +276,8 @@ Ongoing Tournaments
   });
 </script>
 <script>
-  $(document).ready(function() {
-    $('#deleteAllForm').on('submit', function(e) {
+  $(document).ready(function () {
+    $('#deleteAllForm').on('submit', function (e) {
       e.preventDefault();
 
       $.ajax({
@@ -247,13 +286,13 @@ Ongoing Tournaments
         headers: {
           'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         },
-        success: function(response) {
+        success: function (response) {
           // Handle success response
           console.log(response);
           // Reload the page after successful deletion
           location.reload();
         },
-        error: function(xhr, status, error) {
+        error: function (xhr, status, error) {
           // Handle error response
           console.error(error);
         }
