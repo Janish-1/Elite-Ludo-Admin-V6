@@ -9,6 +9,12 @@ use App\Models\Transaction\Transaction;
 
 class initiate extends Controller
 {
+    // Add this method inside your 'initiate' controller
+    public function showPaymentForm()
+    {
+        return view('razorpay-form'); // Create a new Blade view file for this
+    }
+
     public function createpaymentreq(Request $request)
     {
         // Retrieve form input data
@@ -21,11 +27,13 @@ class initiate extends Controller
         $api = new Api('rzp_test_eDWrhtXNOjpjcK', 'LiS0TAY2lZXeEthCxjnHDoYv'); // Initialize Razorpay API instance
 
         // Create an order
-        $order = $api->order->create(array(
-            'amount' => $amount, // Amount in paise (e.g., ₹500)
-            'currency' => 'INR',
-            'payment_capture' => 1 // Auto capture payments
-        ));
+        $order = $api->order->create(
+            array(
+                'amount' => $amount, // Amount in paise (e.g., ₹500)
+                'currency' => 'INR',
+                'payment_capture' => 1 // Auto capture payments
+            )
+        );
 
         $orderID = $order->id; // Get the order ID
 

@@ -1,0 +1,1 @@
+curl https://ludo.pujanpaath.com/api/tournamentautomate

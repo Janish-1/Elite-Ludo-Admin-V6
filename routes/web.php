@@ -275,3 +275,4 @@ Route::get('payment/failed', function () {
 Route::post('/paymentsuccess',[complete::class,'completePay']);
 
 Route::post('/testpayment',[initiate::class,'createpaymentreq']);
+Route::get('/razorpay-form', [initiate::class, 'showPaymentForm']);

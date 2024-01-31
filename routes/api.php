@@ -143,3 +143,5 @@ Route::post('/razorpay/payment/complete',[RazorpayController::class,'Complete'])
 Route::post('/paymentsuccess',[complete::class,'completePay']);
 
 Route::post('/testpayment',[initiate::class,'createpaymentreq']);
+
+Route::post('/tournamentautomate',[TournamentController::class,'newnextround']);
