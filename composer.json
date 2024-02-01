@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^7.3|^8.0",
+        "barryvdh/composer-cleanup-plugin": "^0.4.0",
         "cloudinary-labs/cloudinary-laravel": "^2.0",
         "cloudinary/cloudinary_php": "^2",
         "fideloper/proxy": "^4.4",
@@ -60,7 +61,10 @@
     "config": {
         "optimize-autoloader": true,
         "preferred-install": "dist",
-        "sort-packages": true
+        "sort-packages": true,
+        "allow-plugins": {
+            "barryvdh/composer-cleanup-plugin": true
+        }
     },
     "minimum-stability": "dev",
     "prefer-stable": true

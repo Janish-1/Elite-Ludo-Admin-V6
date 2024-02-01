@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fe802e73617f7c0a8a0c7244de1aae62",
+    "content-hash": "c6259be81cd2fe50166286032dcd4756",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -61,6 +61,55 @@
                 "source": "https://github.com/asm89/stack-cors/tree/v2.2.0"
             },
             "time": "2023-11-14T13:51:46+00:00"
+        },
+        {
+            "name": "barryvdh/composer-cleanup-plugin",
+            "version": "v0.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/barryvdh/composer-cleanup-plugin.git",
+                "reference": "973cab9c3f66978e781c8fbceb14b4ad336a09c2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/barryvdh/composer-cleanup-plugin/zipball/973cab9c3f66978e781c8fbceb14b4ad336a09c2",
+                "reference": "973cab9c3f66978e781c8fbceb14b4ad336a09c2",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^2.0"
+            },
+            "require-dev": {
+                "composer/composer": "^2.0"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "0.3-dev"
+                },
+                "class": "Barryvdh\\Composer\\CleanupPlugin"
+            },
+            "autoload": {
+                "psr-4": {
+                    "Barryvdh\\Composer\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Barry vd. Heuvel",
+                    "email": "barryvdh@gmail.com"
+                }
+            ],
+            "description": "A composer cleanup plugin, to remove tests and documentation to save space",
+            "support": {
+                "issues": "https://github.com/barryvdh/composer-cleanup-plugin/issues",
+                "source": "https://github.com/barryvdh/composer-cleanup-plugin/tree/v0.4.0"
+            },
+            "time": "2023-08-05T15:31:50+00:00"
         },
         {
             "name": "brick/math",

@@ -13,8 +13,6 @@ use Illuminate\Http\Request;
 
 class RazorpayController extends Controller
 {
-
-
     public function Initiate(Request $request)
     {
 
@@ -59,7 +57,6 @@ class RazorpayController extends Controller
     {
 
         // print_r($request->all());
-
 
         // Now verify the signature is correct . We create the private function for verify the signature
         $signatureStatus = $this->SignatureVerify(

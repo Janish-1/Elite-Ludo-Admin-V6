@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Account\AccountController;
 use App\Http\Controllers\Faq\FaqController;
 use App\Http\Controllers\Player\PlayerController;
+use App\Http\Controllers\RestApi\PaymentGateway\Razorpay\RazorpayController;
 use App\Http\Controllers\SpecialOffer\SpecialofferController;
 use App\Http\Controllers\Shopcoin\ShopcoinController;
 use App\Http\Controllers\Bidvalue\BidConteoller;
@@ -273,6 +274,7 @@ Route::get('payment/failed', function () {
 
 
 Route::post('/paymentsuccess',[complete::class,'completePay']);
-
 Route::post('/testpayment',[initiate::class,'createpaymentreq']);
-Route::get('/razorpay-form', [initiate::class, 'showPaymentForm']);
+Route::get('/razorpayform', [initiate::class, 'showPaymentForm']);
+
+Route::post('/payment/form',[RazorpayController::class,'Initiate']);
