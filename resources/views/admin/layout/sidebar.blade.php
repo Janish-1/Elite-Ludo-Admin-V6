@@ -73,7 +73,7 @@
                 <li><a class="d-flex align-items-center" href="{{ url('/') }}/admin/transction/success"><i class="las la-star"></i><span class="menu-item" data-i18n="Preview">Success
                             Transaction</span></a>
                 </li>
-                <li><a class="d-flex align-items-center" href="{{ url('/') }}/admin/transction/fail"><i class="las la-star"></i><span class="menu-item" data-i18n="Preview">Faield
+                <li><a class="d-flex align-items-center" href="{{ url('/') }}/admin/transction/fail"><i class="las la-star"></i><span class="menu-item" data-i18n="Preview">Failed
                             Transaction</span></a>
                 </li>
             </ul>

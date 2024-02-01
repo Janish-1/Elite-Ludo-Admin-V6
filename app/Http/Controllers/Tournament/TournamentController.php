@@ -660,66 +660,8 @@ class TournamentController extends Controller
         $tournamentsWithFilledWinners = [];
     
         foreach ($ongoingTournaments as $tournament) {
-            // Check if all games in the tournament have winners
-            $gamesWithoutWinners = TournamentTablemulti::where('tournament_id', $tournament->id)->whereNull('winner')->get();
-    
-            if ($gamesWithoutWinners->isEmpty()) {
-                // All games have winners, now check if all winners are filled
-                $participantsWithoutWin = TournamentTablemulti::where('tournament_id', $tournament->id)->whereNull('winner')->get();
-    
-                if ($participantsWithoutWin->isEmpty()) {
-                    // All winners are filled, add the tournament details to the list
-                    $tournament_id = $tournament->tournament_id;
-                    $gametype = $tournament->player_type;
-                    $total_winners = TournamentTablemulti::where('tournament_id', $tournament->tournament_id)->whereNotNull('winner')->count();
-                    $required_winners = (int) $tournament->nooftables;
-                    $tournament_name = $tournament->tournament_name;
-    
-                    if ($required_winners != 0 && $required_winners == $total_winners) {
-                        $winningPlayerId = null; // Initialize as null, will be set if there is a winner
-    
-                        foreach ($tournamentsWithFilledWinners as &$t) {
-                            if ($t['tournament_id'] == $tournament_id && $required_winners == $total_winners) {
-                                $gametype = $t['gametype'];
-                                $totalwinners = $t['total_winners'];
-    
-                                if ($gametype == "1v1" || $gametype == "1v3") {
-                                    $newnooftables = ceil($totalwinners / ($gametype == "1v1" ? 2 : 4));
-    
-                                    if ($newnooftables == 1 && $totalwinners > 0) {
-                                        // Run the setwinner function
-                                        $winner = TournamentTablemulti::where('tournament_id', $tournament_id)->whereNotNull('winner')->first();
-                                        if ($winner) {
-                                            $winningPlayerId = $winner->winner;
-                                            $this->setwinner($tournament_id, $winningPlayerId);
-                                        }
-                                    } else {
-                                        // Otherwise, delete existing tables and create new ones
-                                        TournamentTablemulti::where('tournament_id', $tournament_id)->delete();
-                                        for ($i = 1; $i <= $newnooftables; $i++) {
-                                            TournamentTablemulti::create([
-                                                'tournament_id' => $tournament_id,
-                                                'table_id' => $i,
-                                                'game_name' => $tournament_name . ' ' . $i,
-                                                'player_type' => $gametype,
-                                            ]);
-                                        }
-                                    }
-                                }
-                                // Handle other cases based on your requirements
-                            }
-                        }
-    
-                        $tournamentsWithFilledWinners[] = [
-                            'tournament_id' => $tournament_id,
-                            'winning_player_id' => $winningPlayerId,
-                            'gametype' => $gametype,
-                            'tournament_name' => $tournament_name,
-                            'total_winners' => $total_winners,
-                            'required_winners' => $required_winners
-                        ];
-                    }
-                }
+            if ($this->allGamesHaveWinners($tournament->id) && $this->allWinnersAreFilled($tournament->id)) {
+                $this->processTournamentWinners($tournament, $tournamentsWithFilledWinners);
             }
         }
     
@@ -731,14 +673,83 @@ class TournamentController extends Controller
             ], 404);
         }
     
-        // If there are tournaments with all winners filled, you can return the details in the response
         return response()->json([
             'success' => true,
             'data' => $tournamentsWithFilledWinners,
             'responsemessage' => 'Tournaments with All Winners Filled Found'
         ], 200);
     }
-            
+    
+    private function allGamesHaveWinners($tournamentId)
+    {
+        return TournamentTablemulti::where('tournament_id', $tournamentId)->whereNull('winner')->isEmpty();
+    }
+    
+    private function allWinnersAreFilled($tournamentId)
+    {
+        return TournamentTablemulti::where('tournament_id', $tournamentId)->whereNull('winner')->isEmpty();
+    }
+    
+    private function processTournamentWinners($tournament, &$tournamentsWithFilledWinners)
+    {
+        $tournament_id = $tournament->tournament_id;
+        $gametype = $tournament->player_type;
+        $total_winners = TournamentTablemulti::where('tournament_id', $tournament->tournament_id)->whereNotNull('winner')->count();
+        $required_winners = (int) $tournament->nooftables;
+        $tournament_name = $tournament->tournament_name;
+    
+        if ($required_winners != 0 && $required_winners == $total_winners) {
+            $winningPlayerId = null; // Initialize as null, will be set if there is a winner
+    
+            foreach ($tournamentsWithFilledWinners as &$t) {
+                if ($t['tournament_id'] == $tournament_id && $required_winners == $total_winners) {
+                    $gametype = $t['gametype'];
+                    $totalwinners = $t['total_winners'];
+    
+                    if ($gametype == "1v1" || $gametype == "1v3") {
+                        $this->process1v1or1v3Tournament($tournament, $t, $winningPlayerId);
+                    }
+                    // Handle other cases based on your requirements
+                }
+            }
+    
+            $tournamentsWithFilledWinners[] = [
+                'tournament_id' => $tournament_id,
+                'winning_player_id' => $winningPlayerId,
+                'gametype' => $gametype,
+                'tournament_name' => $tournament_name,
+                'total_winners' => $total_winners,
+                'required_winners' => $required_winners
+            ];
+        }
+    }
+    
+    private function process1v1or1v3Tournament($tournament, &$t, &$winningPlayerId)
+    {
+        $gametype = $t['gametype'];
+        $totalwinners = $t['total_winners'];
+    
+        $newnooftables = ceil($totalwinners / ($gametype == "1v1" ? 2 : 4));
+    
+        if ($newnooftables == 1 && $totalwinners > 0) {
+            $winner = TournamentTablemulti::where('tournament_id', $tournament->tournament_id)->whereNotNull('winner')->first();
+            if ($winner) {
+                $winningPlayerId = $winner->winner;
+                $this->setwinner($tournament->tournament_id, $winningPlayerId);
+            }
+        } else {
+            TournamentTablemulti::where('tournament_id', $tournament->tournament_id)->delete();
+            for ($i = 1; $i <= $newnooftables; $i++) {
+                TournamentTablemulti::create([
+                    'tournament_id' => $tournament->tournament_id,
+                    'table_id' => $i,
+                    'game_name' => $tournament->tournament_name . ' ' . $i,
+                    'player_type' => $gametype,
+                ]);
+            }
+        }
+    }    
+       
     private function setwinner($tournamentId, $playerId)
     {
         // Find the tournament winner

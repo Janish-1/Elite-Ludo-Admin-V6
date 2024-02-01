@@ -10,6 +10,7 @@ use App\Models\Withdraw\Withdraw;
 use App\Models\Transaction\Transaction;
 use App\Models\Gamehistory\Gamehistorie;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class GameManagerController extends Controller
 {
@@ -285,22 +286,51 @@ class GameManagerController extends Controller
 
     //update bank account
 
-    public function UpdateBankAccount(Request $request)
+    public function updateBankAccount(Request $request)
     {
-        $UpdateBank = Userdata::where('playerid', $request->playerid)->update(array(
+        // Validation rules
+        $rules = [
+            'playerid' => 'required|exists:userdatas,playerid',
+            'accountHolder' => 'required|string|max:255',
+            'accountNumber' => 'required|string|max:255',
+            'ifsc' => 'required|regex:/^[A-Za-z]{4}[0-9]{7}$/',
+            'uniquebankid' => 'required|integer', // Change to integer
+            'uniqueupiid' => 'required|integer', // Change to integer
+            'upi_id' => 'required|email',
+            'upi_name' => 'required|string|max:255',
+            'acc_holder' => 'required|string|max:255',
+            // Add more rules for other fields if needed
+        ];
+    
+        // Validate the request data
+        $validator = Validator::make($request->all(), $rules);
+    
+        if ($validator->fails()) {
+            // Return validation errors if any
+            return response(['errors' => $validator->errors()], 422);
+        }
+    
+        // If validation passes, update the bank details
+        $updateBank = Userdata::where('playerid', $request->playerid)->update([
             'accountHolder' => $request->accountHolder,
             'accountNumber' => $request->accountNumber,
             'ifsc' => $request->ifsc,
-        ));
-        if ($UpdateBank) {
-            $response = ['notice' => 'Account NUmber Update'];
+            'uniquebankid' => (int) $request->uniquebankid, // Cast to integer
+            'uniqueupiid' => (int) $request->uniqueupiid, // Cast to integer
+            'upi_id' => $request->upi_id,
+            'upi_name' => $request->upi_name,
+            'acc_holder' => $request->acc_holder,
+        ]);
+    
+        if ($updateBank) {
+            $response = ['notice' => 'Bank details updated successfully.'];
             return response($response, 200);
         } else {
-            $response = ['notice' => 'Account Number Not Updated'];
+            $response = ['notice' => 'Bank details not updated.'];
             return response($response, 200);
         }
     }
-
+    
     //payment history
 
     public function PaymentHistory(Request $request)
