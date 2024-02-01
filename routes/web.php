@@ -277,4 +277,4 @@ Route::post('/paymentsuccess',[complete::class,'completePay']);
 Route::post('/testpayment',[initiate::class,'createpaymentreq']);
 Route::get('/razorpayform', [initiate::class, 'showPaymentForm']);
 
-Route::post('/payment/form',[RazorpayController::class,'Initiate']);
+Route::post('/payment/form',[RazorpayController::class,'Initiate'])->name('payment.form');

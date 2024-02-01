@@ -55,74 +55,70 @@ class RazorpayController extends Controller
 
     public function Complete(Request $request)
     {
-
-        // print_r($request->all());
-
-        // Now verify the signature is correct . We create the private function for verify the signature
+        // Now verify the signature is correct. We create the private function to verify the signature
         $signatureStatus = $this->SignatureVerify(
-            $request->all()['rzp_signature'],
-            $request->all()['rzp_paymentid'],
-            $request->all()['rzp_orderid'],
-            $request->all()['amount'],
-            $request->all()['userid']
+            $request->input('rzp_signature'),
+            $request->input('rzp_paymentid'),
+            $request->input('rzp_orderid'),
+            $request->input('amount'),
+            $request->input('userid')
         );
-
-        // If Signature status is true We will save the payment response in our database
-        // In this tutorial we send the response to Success page if payment successfully made
-        if ($signatureStatus == true) {
-
+    
+        // If Signature status is true, we will save the payment response in our database
+        // In this tutorial, we send the response to the Success page if payment is successfully made
+        if ($signatureStatus) {
             $insertTrans = Transaction::insert([
-                    "userid" => $request->all()['userid'],
-                    "order_id" =>$request->all()['rzp_orderid'],
-                    "txn_id" => $request->all()['rzp_paymentid'],
-                    "amount" => $request->all()['amount']/100,
-                    "status" => "Success",
-                    "trans_date" => date("l jS F Y h:i:s A"),
-                    "created_at" => now(),
-                ]);
-
-            if($insertTrans){
-              $userData = Userdata::where("playerid",$request->all()['userid'])->first();
-              $prevAmount = $userData['totalcoin'];
-              $purchaseAmount =  $request->all()['amount']/100;
-              $totalAmount = $prevAmount+$purchaseAmount;
-              $playBalance = $totalAmount+$userData['wincoin'];
-
-              $updateCoin = Userdata::where("playerid",$request->all()['userid'])->update(array(
-                "totalcoin" => $totalAmount,
-                "playcoin" => $playBalance,
-                ));
-
-              if($updateCoin){
-                    return redirect('payment/success');
-              }
-
-            }else{
+                "userid" => $request->input('userid'),
+                "order_id" => $request->input('rzp_orderid'),
+                "txn_id" => $request->input('rzp_paymentid'),
+                "amount" => $request->input('amount') / 100,
+                "status" => "Success",
+                "trans_date" => now(),
+                "created_at" => now(),
+            ]);
+    
+            if ($insertTrans) {
+                $userData = Userdata::where("playerid", $request->input('userid'))->first();
+    
+                if ($userData) {
+                    $prevAmount = $userData['totalcoin'];
+                    $purchaseAmount = $request->input('amount') / 100;
+                    $totalAmount = $prevAmount + $purchaseAmount;
+                    $playBalance = $totalAmount + $userData['wincoin'];
+    
+                    $updateCoin = Userdata::where("playerid", $request->input('userid'))->update([
+                        "totalcoin" => $totalAmount,
+                        "playcoin" => $playBalance,
+                    ]);
+    
+                    if ($updateCoin) {
+                        return redirect('payment/success');
+                    }
+                } else {
+                    echo "User not found.";
+                }
+            } else {
                 echo "Something Is Wrong";
             }
-
         } else {
-
-             $insertTrans = Transaction::insert([
-                    "userid" => $request->all()['userid'],
-                    "order_id" =>$request->all()['rzp_orderid'],
-                    "txn_id" => $request->all()['rzp_paymentid'],
-                    "amount" => $request->all()['amount']/100,
-                    "status" => "Failed",
-                    "trans_date" => date("l jS F Y h:i:s A"),
-                    "created_at" => now(),
-                ]);
-
-             if($insertTrans){
+            $insertTrans = Transaction::insert([
+                "userid" => $request->input('userid'),
+                "order_id" => $request->input('rzp_orderid'),
+                "txn_id" => $request->input('rzp_paymentid'),
+                "amount" => $request->input('amount') / 100,
+                "status" => "Failed",
+                "trans_date" => now(),
+                "created_at" => now(),
+            ]);
+    
+            if ($insertTrans) {
                 return redirect('payment/failed');
-            }else{
-              echo "Something Is Wrong";
+            } else {
+                echo "Something Is Wrong";
             }
-
-
         }
     }
-
+    
     // In this function we return boolean if signature is correct
     private function SignatureVerify($_signature, $_paymentId, $_orderId)
     {
