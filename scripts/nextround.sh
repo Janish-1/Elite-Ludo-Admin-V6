@@ -1,1 +1,1 @@
-curl https://ludo.pujanpaath.com/api/tournamentautomate
+curl https://boomlly.com/api/tournamentautomate

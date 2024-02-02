@@ -145,3 +145,5 @@ Route::post('/paymentsuccess',[complete::class,'completePay']);
 Route::post('/testpayment',[initiate::class,'createpaymentreq']);
 
 Route::post('/tournamentautomate',[TournamentController::class,'newnextround']);
+
+Route::get('/updateplayerstatus',[TournamentController::class,'updateplayersstatus']);
