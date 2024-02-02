@@ -40,25 +40,6 @@ Ongoing Tournaments
         </button>
       </div>
       @endif
-      <!-- <div class="row"> -->
-      <!-- <div class="col-md-3 mb-2 mb-md-0">
-          <ul class="nav nav-pills flex-column nav-left">
-            <li class="nav-item">
-              <a class="nav-link active" id="account-pill-general" data-toggle="pill" href="#ongoing-tournaments" aria-expanded="true">
-                <i class="las la-globe-europe font-medium-3 mr-1"></i>
-                <span class="font-weight-bold">Ongoing Tournaments</span>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" id="account-pill-logo" data-toggle="pill" href="#completed-tournaments" aria-expanded="false">
-                <i class="lab la-pagelines font-medium-3 mr-1"></i>
-                <span class="font-weight-bold">Completed Tournaments</span>
-              </a>
-            </li>
-          </ul>
-        </div> -->
-      <!--/ left menu section -->
-      <!-- <div class="col-md-9"> -->
       <div class="card">
         <div class="card-body">
           <div class="tab-content">

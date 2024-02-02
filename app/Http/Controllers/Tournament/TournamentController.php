@@ -190,6 +190,17 @@ class TournamentController extends Controller
             return response()->json(['error' => 'Player ID, tournament ID, or table ID is missing.'], 400);
         }
 
+        $data1 = Tournament::where('tournament_id', $tournamentId)->first();
+        $reqmoney = (int) $data1->entry_fee;
+
+        $data2 = Userdata::where('playerid', $playerId)->first();
+        $playermoney = (int) $data2->totalcoin;
+
+        // Check if entry fee is equal to player's total coins
+        if ($reqmoney > $playermoney) {
+            return response()->json(['error' => 'Not Enough Coins'], 400);
+        }
+
         $tableModel = null;
 
         $playerInGame = UserData::where('playerid', $playerId)
@@ -660,7 +671,9 @@ class TournamentController extends Controller
         foreach ($ongoingTournaments as $tournament) {
             if ($this->allGamesHaveWinners($tournament->id) && $this->allWinnersAreFilled($tournament->id)) {
                 $gametype = $tournament->player_type;
-                $totalwinners = TournamentTablemulti::where('tournament_id', $tournament->tournament_id)->whereNotNull('winner')->count();
+                $tournamentid = $tournament->tournament_id;
+                $totalwinners = TournamentTablemulti::where('tournament_id', $tournamentid)->whereNotNull('winner')->count();
+                $totalnumberoftables = TournamentTablemulti::where('tournament_id',$tournamentid)->count();
 
                 if ($totalwinners === 1) {
                     // If there is only one winner and one table
@@ -678,7 +691,7 @@ class TournamentController extends Controller
                     ], 200);
                 }
 
-                if ($totalwinners == $tournament->nooftables) {
+                if ($totalwinners == $totalnumberoftables) {
                     // Clear existing tables
                     TournamentTablemulti::where('tournament_id', $tournament->tournament_id)->delete();
 
@@ -801,7 +814,7 @@ class TournamentController extends Controller
     public function updateplayersstatus(Request $request)
     {
         $busyplayers = Userdata::where('in_game_status', 1)->get();
-    
+
         $playersInGame = $busyplayers->map(function ($player) {
             return [
                 'playerid' => $player->playerid,
@@ -811,7 +824,7 @@ class TournamentController extends Controller
                 'bid_pay_status' => $player->bid_pay_status,
             ];
         });
-    
+
         foreach ($playersInGame as &$player) {
             $playerid = $player['playerid'];
             $playerfound = TournamentTablemulti::where('player_id1', $playerid)
@@ -819,12 +832,12 @@ class TournamentController extends Controller
                 ->orWhere('player_id3', $playerid)
                 ->orWhere('player_id4', $playerid)
                 ->get();
-    
+
             if ($playerfound->isNotEmpty()) {
                 $correctTournament = $playerfound->first(function ($foundPlayer) use ($player) {
                     return $foundPlayer->tournament_id == $player['tournament_id'];
                 });
-    
+
                 if (!$correctTournament) {
                     // Player is in the wrong tournament
                     $data = Userdata::where('playerid', $playerid)->first();
@@ -838,10 +851,10 @@ class TournamentController extends Controller
                 $data1->in_game_status = null;
                 $data1->tournament_id = null;
                 $data1->table_id = null;
-                $data1->save();    
+                $data1->save();
             }
         }
-    
+
         // Return a general response if needed
         return response()->json([
             'success' => true,
