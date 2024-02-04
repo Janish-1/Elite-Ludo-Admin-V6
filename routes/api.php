@@ -136,14 +136,16 @@ Route::post('/paymentcomplete',[complete::class, 'completePay']);
 
 // This route is for payment initiate page
 
-Route::get('/razorpay/payment',[RazorpayController::class,'Initiate']);
+Route::post('/razorpay/payment',[RazorpayController::class,'Initiate']);
 
 Route::post('/razorpay/payment/complete',[RazorpayController::class,'Complete']);
 
 Route::post('/paymentsuccess',[complete::class,'completePay']);
 
-Route::post('/testpayment',[initiate::class,'createpaymentreq']);
+Route::post('/testpayment',[RazorpayController::class,'createpaymentreq']);
 
 Route::post('/tournamentautomate',[TournamentController::class,'newnextround']);
 
 Route::get('/updateplayerstatus',[TournamentController::class,'updateplayersstatus']);
+
+Route::post('/razorpayform', [initiate::class, 'showPaymentForm']);

@@ -291,14 +291,14 @@ class GameManagerController extends Controller
         // Validation rules
         $rules = [
             'playerid' => 'required|exists:userdatas,playerid',
-            'accountHolder' => 'required|string|max:255',
-            'accountNumber' => 'required|string|max:255',
-            'ifsc' => 'required|regex:/^[A-Za-z]{4}[0-9]{7}$/',
-            'uniquebankid' => 'required|integer', // Change to integer
-            'uniqueupiid' => 'required|integer', // Change to integer
-            'upi_id' => 'required|email',
-            'upi_name' => 'required|string|max:255',
-            'acc_holder' => 'required|string|max:255',
+            'accountHolder' => 'nullable|string|max:255',
+            'accountNumber' => 'nullable|string|max:255',
+            'ifsc' => 'nullable|regex:/^[A-Za-z]{4}[0-9]{7}$/',
+            'uniquebankid' => 'nullable|integer',
+            'uniqueupiid' => 'nullable|integer',
+            'upi_id' => 'nullable|email',
+            'upi_name' => 'nullable|string|max:255',
+            'acc_holder' => 'nullable|string|max:255',
             // Add more rules for other fields if needed
         ];
     
@@ -315,8 +315,8 @@ class GameManagerController extends Controller
             'accountHolder' => $request->accountHolder,
             'accountNumber' => $request->accountNumber,
             'ifsc' => $request->ifsc,
-            'uniquebankid' => (int) $request->uniquebankid, // Cast to integer
-            'uniqueupiid' => (int) $request->uniqueupiid, // Cast to integer
+            'uniquebankid' => $request->uniquebankid,
+            'uniqueupiid' => $request->uniqueupiid,
             'upi_id' => $request->upi_id,
             'upi_name' => $request->upi_name,
             'acc_holder' => $request->acc_holder,
@@ -330,7 +330,7 @@ class GameManagerController extends Controller
             return response($response, 200);
         }
     }
-    
+        
     //payment history
 
     public function PaymentHistory(Request $request)

@@ -8,14 +8,12 @@ use Illuminate\Support\Str;
 use App\Models\WebSetting\Websetting;
 use App\Models\Transaction\Transaction;
 use App\Models\Player\Userdata;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class RazorpayController extends Controller
 {
     public function Initiate(Request $request)
     {
-
         $PayKey = Websetting::first();
 
         // Generate random receipt id
@@ -23,8 +21,6 @@ class RazorpayController extends Controller
 
         $api = new Api($PayKey->payment_apikey, $PayKey->payment_secret);
 
-        // In razorpay you have to convert rupees into paise we multiply by 100
-        // Currency will be INR
         // Creating order
         $order = $api->order->create(
             array(
@@ -37,11 +33,11 @@ class RazorpayController extends Controller
         // Let's create the razorpay payment page
         $response = [
             'orderId' => $order['id'],
-            'razorpayId' =>$PayKey->payment_apikey,
+            'razorpayId' => $PayKey->payment_apikey,
             'amount' => $request->amount * 100,
             'name' => $request->name,
             'currency' => 'INR',
-            'email' => $request->email,
+            'email' => "",
             'contactNumber' => $request->phone,
             'address' => "Dummy Text",
             'description' => 'Ludo payment',
@@ -63,7 +59,7 @@ class RazorpayController extends Controller
             $request->input('amount'),
             $request->input('userid')
         );
-    
+
         // If Signature status is true, we will save the payment response in our database
         // In this tutorial, we send the response to the Success page if payment is successfully made
         if ($signatureStatus) {
@@ -76,21 +72,21 @@ class RazorpayController extends Controller
                 "trans_date" => now(),
                 "created_at" => now(),
             ]);
-    
+
             if ($insertTrans) {
                 $userData = Userdata::where("playerid", $request->input('userid'))->first();
-    
+
                 if ($userData) {
                     $prevAmount = $userData['totalcoin'];
                     $purchaseAmount = $request->input('amount') / 100;
                     $totalAmount = $prevAmount + $purchaseAmount;
                     $playBalance = $totalAmount + $userData['wincoin'];
-    
+
                     $updateCoin = Userdata::where("playerid", $request->input('userid'))->update([
                         "totalcoin" => $totalAmount,
                         "playcoin" => $playBalance,
                     ]);
-    
+
                     if ($updateCoin) {
                         return redirect('payment/success');
                     }
@@ -110,7 +106,7 @@ class RazorpayController extends Controller
                 "trans_date" => now(),
                 "created_at" => now(),
             ]);
-    
+
             if ($insertTrans) {
                 return redirect('payment/failed');
             } else {
@@ -118,7 +114,7 @@ class RazorpayController extends Controller
             }
         }
     }
-    
+
     // In this function we return boolean if signature is correct
     private function SignatureVerify($_signature, $_paymentId, $_orderId)
     {
@@ -126,13 +122,13 @@ class RazorpayController extends Controller
 
         try {
             $api = new Api($PayKey->payment_apikey, $PayKey->payment_secret);
-            $attributes  = array('razorpay_signature'  => $_signature,  'razorpay_payment_id'  => $_paymentId,  'razorpay_order_id' => $_orderId);
-            $order  = $api->utility->verifyPaymentSignature($attributes);
+            $attributes = array('razorpay_signature' => $_signature, 'razorpay_payment_id' => $_paymentId, 'razorpay_order_id' => $_orderId);
+            $order = $api->utility->verifyPaymentSignature($attributes);
             return true;
         } catch (\Exception $e) {
             // If Signature is not correct its give a excetption so we use try catch
             return false;
         }
 
-}
+    }
 }

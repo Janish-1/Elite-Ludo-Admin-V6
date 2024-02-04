@@ -608,37 +608,34 @@ class PlayerController extends Controller
 
     public function createWithdraw(Request $request)
     {
-        // Validation rules for all required fields
+        // Validation rules for the required fields
         $rules = [
-            'userid' => 'required',
-            'amount' => 'required|numeric|min:0',
+            'userid' => 'required|exists:userdatas,playerid',
+            'upiid' => 'required|email',
             'payment_method' => 'required',
-            'wallet_number' => 'required',
-            'bank_name' => 'required',
-            'account_number' => 'required',
-            'ifsc_code' => 'required',
+            'amount' => 'required|numeric|min:0',
         ];
-
+    
         // Validate incoming request data
         $validator = Validator::make($request->all(), $rules);
-
+    
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'errors' => $validator->errors(),
             ], 400);
         }
-
+    
         try {
             // Extract validated data from the request
             $validatedData = $validator->validated();
-
+    
             // Generate a random 8-digit number for transaction_id
             $validatedData['transaction_id'] = str_pad(mt_rand(1, 99999999), 8, '0', STR_PAD_LEFT);
-
+    
             // Create a new withdraw entry using the Withdraw model
             $withdraw = Withdraw::create($validatedData);
-
+    
             return response()->json([
                 'success' => true,
                 'message' => 'Withdraw entry created successfully',
@@ -652,7 +649,7 @@ class PlayerController extends Controller
             ], 500);
         }
     }
-
+    
     public function approveWithdraw(Request $request)
     {
         $transaction_id = $request->input('transaction_id');
@@ -663,6 +660,22 @@ class PlayerController extends Controller
     
             // Update withdrawstatus to '1' for approval
             $withdraw->update(['status' => '1']);
+    
+            // Deduct the withdrawn amount from player's totalcoin and wincoin
+            $player = Userdata::where('playerid', $withdraw->userid)->firstOrFail();
+            
+            // Deduct from totalcoin
+            $player->totalcoin -= $withdraw->amount;
+    
+            // Deduct from wincoin (if applicable)
+            if ($withdraw->amount > $player->wincoin) {
+                $player->wincoin = 0;
+            } else {
+                $player->wincoin -= $withdraw->amount;
+            }
+    
+            // Save the changes to the player's record
+            $player->save();
     
             return response()->json([
                 'success' => true,
@@ -677,7 +690,7 @@ class PlayerController extends Controller
             ], 500);
         }
     }
-    
+        
     public function rejectWithdraw(Request $request)
     {
         $transaction_id = $request->input('transaction_id');

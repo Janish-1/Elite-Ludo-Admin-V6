@@ -31,32 +31,27 @@
     </style>
 </head>
 <body>
-    <form action="{{ route('payment.form') }}" method="POST">
+<form id="paymentForm" action="{{ route('payment.form') }}" method="POST">
         @csrf <!-- CSRF token for Laravel -->
 
         <div class="form-group">
             <label for="amount">Amount (in paise)</label>
-            <input type="number" class="form-control" id="amount" name="amount" required>
+            <input type="number" class="form-control" id="amount" name="amount" value="{{ $amount }}" required>
         </div>
 
         <div class="form-group">
             <label for="name">Name</label>
-            <input type="text" class="form-control" id="name" name="name" required>
-        </div>
-
-        <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" class="form-control" id="email" name="email" required>
+            <input type="text" class="form-control" id="name" name="name" value="{{ $name }}" required>
         </div>
 
         <div class="form-group">
             <label for="phone">Phone</label>
-            <input type="text" class="form-control" id="phone" name="phone" required>
+            <input type="text" class="form-control" id="phone" name="phone" value="{{ $phone }}" required>
         </div>
 
         <div class="form-group">
             <label for="Player_ID">Player ID</label>
-            <input type="text" class="form-control" id="Player_ID" name="Player_ID" required>
+            <input type="text" class="form-control" id="Player_ID" name="Player_ID" value="{{ $Player_ID }}" required>
         </div>
 
         <button type="submit" class="btn btn-primary">Submit</button>
@@ -64,5 +59,15 @@
 
     <!-- Include Bootstrap JS (Assuming you have it locally or use a CDN) -->
     <script src="path/to/bootstrap.js"></script>
+
+    <script>
+        // Auto-submit the form after page load if query parameters are present
+        document.addEventListener("DOMContentLoaded", function () {
+            const queryString = window.location.search;
+            if (queryString) {
+                document.getElementById("paymentForm").submit();
+            }
+        });
+    </script>
 </body>
 </html>

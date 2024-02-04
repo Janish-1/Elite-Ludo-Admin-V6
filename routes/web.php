@@ -262,6 +262,7 @@ Route::post('/contact/now', [FrontController::class, 'ContactNow'])->name('creat
 
 //now front routing
 Route::get('/cashfree/payment',[CashfreeController::class,'Cashfree']);
+
 Route::post('/cashfree/payment/success',[CashfreeController::class,'PaymentSuccess']);
 
 Route::get('payment/success', function () {
@@ -272,9 +273,9 @@ Route::get('payment/failed', function () {
     return view("admin.Razorpay.PaymentFaield");
 });
 
-
-Route::post('/paymentsuccess',[complete::class,'completePay']);
 Route::post('/testpayment',[initiate::class,'createpaymentreq']);
-Route::get('/razorpayform', [initiate::class, 'showPaymentForm']);
 
-Route::post('/payment/form',[RazorpayController::class,'Initiate'])->name('payment.form');
+Route::get('/razorpayform', [initiate::class, 'showPaymentForm']);
+Route::post('/payment/form', [RazorpayController::class, 'Initiate'])->name('payment.form');
+Route::get('/payment/page', [initiate::class, 'paymentPage'])->name('payment.page');
+Route::post('/paymentsuccess', [complete::class, 'completePay']);

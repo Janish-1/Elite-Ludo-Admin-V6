@@ -9,8 +9,30 @@ use App\Models\Transaction\Transaction;
 
 class initiate extends Controller
 {
-    public function showPaymentForm()
+    public function showPaymentForm(Request $request)
     {
-        return view('razorpay-form'); // Create a new Blade view file for this
+        // Extract data from the URL parameters or any other source
+        $amount = $request->input('amount');
+        $name = urlencode($request->input('name')); // Encode the name parameter
+        $phone = $request->input('phone');
+        $Player_ID = $request->input('Player_ID');
+
+        // Make API request to get the URL with data
+        $apiUrl = route('payment.page', [
+            'amount' => $amount,
+            'name' => $name,
+            'phone' => $phone,
+            'Player_ID' => $Player_ID,
+        ]);
+
+        // Redirect the user to the API URL
+        return response()->json([
+            "url" => $apiUrl
+        ]);
+    }
+
+    public function paymentPage(Request $request)
+    {
+        return view('razorpay-form', $request->all());
     }
 }
