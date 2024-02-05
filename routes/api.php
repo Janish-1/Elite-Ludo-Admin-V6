@@ -149,3 +149,5 @@ Route::post('/tournamentautomate',[TournamentController::class,'newnextround']);
 Route::get('/updateplayerstatus',[TournamentController::class,'updateplayersstatus']);
 
 Route::post('/razorpayform', [initiate::class, 'showPaymentForm']);
+
+Route::post('/updateupiid',[PlayerController::class,'updateupiid']);

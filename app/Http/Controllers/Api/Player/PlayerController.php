@@ -715,4 +715,45 @@ class PlayerController extends Controller
             ], 500);
         }
     }
+    public function updateupiid(Request $request)
+    {
+        // Validation rules for the required fields
+        $rules = [
+            'playerid' => 'required|exists:userdatas,playerid',
+            'upiid' => 'required|regex:/^\d+@.+$/',
+        ];
+    
+        // Validate incoming request data
+        $validator = Validator::make($request->all(), $rules);
+    
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors(),
+            ], 400);
+        }
+    
+        try {
+            // Extract validated data from the request
+            $validatedData = $validator->validated();
+    
+            // Find the user by playerid
+            $userData = Userdata::where('playerid', $validatedData['playerid'])->firstOrFail();
+    
+            // Update the UPI ID
+            $userData->upi_id = $validatedData['upiid'];
+            $userData->save();
+    
+            return response()->json([
+                'success' => true,
+                'message' => 'UPI ID updated successfully for player ID: ' . $validatedData['playerid'],
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update UPI ID',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
 }
