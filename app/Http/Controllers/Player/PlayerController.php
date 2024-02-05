@@ -130,8 +130,6 @@ class PlayerController extends Controller
     }
   }
 
-  //show transaction history
-
   public function TransctionHistory($id)
   {
     $UserData = Userdata::where('playerid', Crypt::decrypt($id))->first();
