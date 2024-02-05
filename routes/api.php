@@ -155,3 +155,5 @@ Route::post('/updateupiid',[PlayerController::class,'updateupiid']);
 Route::post('/convertcoin',[PlayerController::class,'convertWinCoin']);
 
 Route::post('/getwithdrawstatus',[PlayerController::class,'getPendingWithdraws']);
+
+Route::post('/tournament/enter',[TournamentController::class,'enrollPlayerInTournament']);

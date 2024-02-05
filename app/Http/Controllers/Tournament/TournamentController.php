@@ -193,15 +193,13 @@ class TournamentController extends Controller
         }
     }
 
-    public function enrollPlayerInTable(Request $request)
+    public function enrollPlayerInTournament(Request $request)
     {
         $tournamentId = $request->input('tournament_id');
-        $tableId = $request->input('table_id');
         $playerId = $request->input('player_id');
 
-        // Check if the player ID, tournament ID, and table ID are provided
-        if (!$playerId || !$tournamentId || !$tableId) {
-            return response()->json(['error' => 'Player ID, tournament ID, or table ID is missing.'], 400);
+        if (!$playerId || !$tournamentId) {
+            return response()->json(['error' => 'Player ID or tournament ID is missing.'], 400);
         }
 
         $data1 = Tournament::where('tournament_id', $tournamentId)->first();
@@ -210,12 +208,12 @@ class TournamentController extends Controller
         $data2 = Userdata::where('playerid', $playerId)->first();
         $playermoney = (int) $data2->totalcoin;
 
-        // Check if entry fee is equal to player's total coins
         if ($reqmoney > $playermoney) {
             return response()->json(['error' => 'Not Enough Coins'], 400);
         }
 
-        $tableModel = null;
+        $data2->totalcoin -= $reqmoney;
+        $data2->save();
 
         $playerInGame = UserData::where('playerid', $playerId)
             ->where('in_game_status', true)
@@ -225,8 +223,53 @@ class TournamentController extends Controller
             return response()->json(['error' => 'Player is already engaged in a game.'], 400);
         }
 
-        // Retrieve the tournament instance by ID
         $tournament = Tournament::where('tournament_id', $tournamentId)->first();
+
+        if (!$tournament) {
+            return response()->json(['error' => 'Tournament not found.'], 404);
+        }
+
+        $userData = UserData::updateOrCreate(
+            ['playerid' => $playerId],
+            [
+                'in_game_status' => true,
+                'tournament_id' => $tournamentId,
+            ]
+        );
+
+        return response()->json(['success' => true,'responsemessage' => 'Player enrolled in the tournament successfully.'], 200);
+    }
+
+
+    public function enrollPlayerInTable(Request $request)
+    {
+        $tableId = $request->input('table_id');
+        $playerId = $request->input('player_id');
+
+        // Check if the player ID and table ID are provided
+        if (!$playerId || !$tableId) {
+            return response()->json(['error' => 'Player ID or table ID is missing.'], 400);
+        }
+
+        $userData = UserData::where('playerid', $playerId)->first();
+
+        // Check if userdata and tournament ID are available
+        if (!$userData || !$userData->tournament_id) {
+            return response()->json(['error' => 'Tournament information not found for the player.'], 404);
+        }
+
+        $tableModel = null;
+
+        $playerInGame = UserData::where('playerid', $playerId)
+            ->where('table_id', true)
+            ->exists();
+
+        if ($playerInGame) {
+            return response()->json(['error' => 'Player is already engaged in a game.'], 400);
+        }
+
+        // Retrieve the tournament instance by ID
+        $tournament = Tournament::where('tournament_id', $userData->tournament_id)->first();
 
         if (!$tournament) {
             return response()->json(['error' => 'Tournament not found.'], 404);
@@ -235,7 +278,7 @@ class TournamentController extends Controller
         if ($tournament->player_type === '1v1') {
             $tableModel = TournamentTablemulti::class;
             // Retrieve the table instance by tournament and table IDs
-            $table = $tableModel::where('tournament_id', $tournamentId)
+            $table = $tableModel::where('tournament_id', $userData->tournament_id)
                 ->where('table_id', $tableId)
                 ->first();
 
@@ -258,8 +301,6 @@ class TournamentController extends Controller
             $userData = UserData::updateOrCreate(
                 ['playerid' => $playerId],
                 [
-                    'in_game_status' => true,
-                    'tournament_id' => $tournamentId,
                     'table_id' => $tableId,
                 ]
             );
@@ -272,7 +313,7 @@ class TournamentController extends Controller
         } elseif ($tournament->player_type === '1v3') {
             $tableModel = TournamentTablemulti::class;
             // Retrieve the table instance by tournament and table IDs
-            $table = $tableModel::where('tournament_id', $tournamentId)
+            $table = $tableModel::where('tournament_id', $userData->tournament_id)
                 ->where('table_id', $tableId)
                 ->first();
 
@@ -301,10 +342,7 @@ class TournamentController extends Controller
             UserData::updateOrCreate(
                 ['playerid' => $playerId],
                 [
-                    'in_game_status' => true,
-                    'tournament_id' => $tournamentId,
                     'table_id' => $tableId,
-                    // Additional columns to store current_table_id, etc.
                 ]
             );
 
@@ -538,8 +576,6 @@ class TournamentController extends Controller
         $tournament = Tournament::where('tournament_id', $tournamentId)->first();
 
         if ($tournament) {
-            // Get the reward amount from the tournament
-            $reward = $tournament->rewards ?? 0;
             $type = $tournament->player_type;
 
             // Update the player's totalcoin by adding the reward
@@ -548,8 +584,6 @@ class TournamentController extends Controller
 
                 TournamentTablemulti::where('tournament_id', $tournamentId)->delete();
 
-                $player->totalcoin += $reward;
-                $player->wincoin += $reward;
                 $player->save();
 
                 // Reset tournament status and winner
@@ -792,7 +826,6 @@ class TournamentController extends Controller
 
         if ($tournament) {
             // Get the reward amount from the tournament
-            $reward = $tournament->roundprize;
             $type = $tournament->player_type;
 
             // Update the player's totalcoin by adding the reward
@@ -801,7 +834,7 @@ class TournamentController extends Controller
 
                 TournamentTablemulti::where('tournament_id', $tournamentId)->delete();
 
-                $player->wincoin += $reward;
+                // $player->wincoin += $reward;
                 $player->save();
 
                 // Reset tournament status and winner
