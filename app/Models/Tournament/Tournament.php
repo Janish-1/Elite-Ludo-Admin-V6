@@ -21,5 +21,7 @@ class Tournament extends Model
         "nooftables",
         "t_status",
         "rewards",
+        "roundprize",
+        "perroundamount",
         ];
 }

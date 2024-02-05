@@ -93,13 +93,27 @@ class TournamentController extends Controller
     public function CreateTournamentWithTables(Request $request)
     {
         $tournamentData = $request->all();
-        $numberOfTables = $request->input('tables');
-        $gameType = $tournamentData['player_type']; // Assuming 'player_type' is present in $tournamentData
+        $numTables = $tournamentData['nooftables'];
+        $gameType = $tournamentData['player_type'];
+        $prizePool = $tournamentData['prize_pool'];
+
+        // Calculate tournament details
+        if ($gameType == '1v1') {
+            // If the number of tables is a power of 2, calculate the rounds accordingly
+            $totalRounds = log($numTables, 2) + 1;
+        }
+        if ($gameType == '1v3') {
+            // If the number of tables is a power of 2, calculate the rounds accordingly
+            $totalRounds = log($numTables, 4) + 1;
+        }
+
+        $perRoundAmount = $prizePool / $totalRounds;
+        $roundPrize = $perRoundAmount / $numTables;
 
         // Generate a unique random tournament ID with up to 5 characters
         $tournamentId = Str::random(15);
 
-        $tournament = Tournament::create(array_merge($tournamentData, ['tournament_id' => $tournamentId, 't_status' => 'ongoing']));
+        $tournament = Tournament::create(array_merge($tournamentData, ['tournament_id' => $tournamentId, 't_status' => 'ongoing', 'perroundamount' => $perRoundAmount, 'roundprize' => $roundPrize]));
 
         if ($tournament) {
             for ($i = 1; $i <= $tournament->nooftables; $i++) {
@@ -446,6 +460,12 @@ class TournamentController extends Controller
                 TournamentTablemulti::where('tournament_id', $tournamentIdMulti)
                     ->where('table_id', $tableIdMulti)
                     ->update(['winner' => $playerId]);
+
+                // Get the roundprize for the tournament
+                $roundPrize = Tournament::where("tournament_id", $tournamentIdMulti)->value('roundprize');
+
+                // Update player's wincoin by the roundprize amount
+                UserData::where('playerid', $playerId)->increment('wincoin', $roundPrize);
             }
         }
 
@@ -673,7 +693,7 @@ class TournamentController extends Controller
                 $gametype = $tournament->player_type;
                 $tournamentid = $tournament->tournament_id;
                 $totalwinners = TournamentTablemulti::where('tournament_id', $tournamentid)->whereNotNull('winner')->count();
-                $totalnumberoftables = TournamentTablemulti::where('tournament_id',$tournamentid)->count();
+                $totalnumberoftables = TournamentTablemulti::where('tournament_id', $tournamentid)->count();
 
                 if ($totalwinners === 1) {
                     // If there is only one winner and one table
@@ -692,11 +712,41 @@ class TournamentController extends Controller
                 }
 
                 if ($totalwinners == $totalnumberoftables) {
+
+                    // Assuming you have a variable $tournament containing the tournament details
+                    $winners = TournamentTablemulti::where('tournament_id', $tournament->tournament_id)
+                        ->whereNotNull('winner')
+                        ->get();
+
+                    foreach ($winners as $winner) {
+                        $playerId = $winner->winner;
+
+                        // Assuming UserData is your model for player data
+                        $player = UserData::where('playerid', $playerId)->first();
+
+                        if ($player) {
+                            // Assuming 'reward_amount' is the amount to be rewarded as wincoin
+                            $rewardAmount = $tournament->roundprize;
+
+                            // Update the player's wincoin
+                            $player->increment('wincoin', $rewardAmount);
+                        }
+                    }
+
                     // Clear existing tables
                     TournamentTablemulti::where('tournament_id', $tournament->tournament_id)->delete();
 
                     // Create new tables to accommodate all players
                     $newnooftables = ceil($totalwinners / ($gametype == "1v1" ? 2 : 4));
+
+                    $x = Tournament::where("tournament_id", $tournament->tournament_id)->first();
+
+                    $perRoundAmount = $x['perroundamount'];
+                    $newroundPrize = $perRoundAmount / $newnooftables;
+
+                    // Update round prize in the tournament
+                    $tournament->update(['roundprize' => $newroundPrize]);
+
                     for ($i = 1; $i <= $newnooftables; $i++) {
                         TournamentTablemulti::create([
                             'tournament_id' => $tournament->tournament_id,
@@ -742,7 +792,7 @@ class TournamentController extends Controller
 
         if ($tournament) {
             // Get the reward amount from the tournament
-            $reward = $tournament->rewards ?? 0;
+            $reward = $tournament->roundprize;
             $type = $tournament->player_type;
 
             // Update the player's totalcoin by adding the reward
@@ -751,7 +801,6 @@ class TournamentController extends Controller
 
                 TournamentTablemulti::where('tournament_id', $tournamentId)->delete();
 
-                $player->totalcoin += $reward;
                 $player->wincoin += $reward;
                 $player->save();
 

@@ -151,3 +151,7 @@ Route::get('/updateplayerstatus',[TournamentController::class,'updateplayersstat
 Route::post('/razorpayform', [initiate::class, 'showPaymentForm']);
 
 Route::post('/updateupiid',[PlayerController::class,'updateupiid']);
+
+Route::post('/convertcoin',[PlayerController::class,'convertWinCoin']);
+
+Route::post('/getwithdrawstatus',[PlayerController::class,'getPendingWithdraws']);

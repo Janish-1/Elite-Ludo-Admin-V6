@@ -66,9 +66,11 @@ class PlayerController extends Controller
                     return response($response, 200);
                 }
             } else {
-                $updatedata = Userdata::where('useremail', $request->email)->update(array(
-                    "device_token" => $request->device_token,
-                ));
+                $updatedata = Userdata::where('useremail', $request->email)->update(
+                    array(
+                        "device_token" => $request->device_token,
+                    )
+                );
                 if ($updatedata) {
                     $response = ['notice' => 'Device ID Update'];
                     return response($response, 200);
@@ -131,7 +133,7 @@ class PlayerController extends Controller
         $shopcoin = Shopcoin::get();
         $gameConfig = Websetting::first();
 
-        $response = ["message" => 'All Details Fetched Successfully', 'playerdata' => $userdata, 'bidvalues' => $bid, 'gameconfig' => $gameConfig, 'shop_coin' => $shopcoin, 'kyc_completed' => $userdata ? (bool)$userdata->kyc_completed : false];
+        $response = ["message" => 'All Details Fetched Successfully', 'playerdata' => $userdata, 'bidvalues' => $bid, 'gameconfig' => $gameConfig, 'shop_coin' => $shopcoin, 'kyc_completed' => $userdata ? (bool) $userdata->kyc_completed : false];
         return response($response, 200);
     }
 
@@ -216,33 +218,33 @@ class PlayerController extends Controller
     {
         // Fetch game configuration
         $gameConfig = Websetting::first();
-    
+
         // Generate random number for refer code and player ID
         $randomNumber = random_int(1000000, 9999999);
         $playerid = random_int(1000000, 9999999);
-    
+
         // Check if the device token is already registered
         $checkDevice = Userdata::where('device_token', $request->device_token)->first();
-    
+
         if ($checkDevice) {
             $response = ['success' => false, 'message' => 'User Used Different Device'];
             return response($response, 200);
         }
-    
+
         // Check if the mobile number is exactly 10 digits
         if (strlen($request->mobilenumber) !== 10) {
             $response = ['success' => false, 'message' => 'Mobile number should be exactly 10 digits'];
             return response($response, 200);
         }
-    
+
         // Check if the mobile number is already registered
         $existingUser = Userdata::where('userphone', $request->mobilenumber)->first();
-    
+
         if ($existingUser) {
             $response = ['success' => false, 'message' => 'Mobile number already registered'];
             return response($response, 200);
         }
-    
+
         // Prepare user data
         $userData = [
             'playerid' => $playerid,
@@ -258,33 +260,33 @@ class PlayerController extends Controller
             'status' => 1,
             'banned' => 1,
         ];
-    
+
         // Check if a referral code is provided
         if ($request->refer_code) {
             $referCodeUser = Userdata::where('refer_code', $request->refer_code)->first();
-    
+
             if (!$referCodeUser) {
                 $response = ['success' => false, 'message' => 'Invalid Refer Code'];
                 return response($response, 200);
             }
-    
+
             // Update refrelCoin for the referring user
             $refercoin = $referCodeUser->refrelCoin + $gameConfig->refer_bonus;
             $referCodeUser->update(['refrelCoin' => $refercoin]);
-    
+
             // Save the used refer code in user data
             $userData['used_refer_code'] = $request->refer_code;
         }
-    
+
         // Insert the user data into the database
         $insert = Userdata::insert($userData);
-    
+
         if ($insert) {
             $response = ['success' => true, 'message' => 'User Created Successfully!', 'playerid' => $playerid];
         } else {
             $response = ['success' => false, 'message' => 'Something went wrong'];
         }
-    
+
         return response($response, 200);
     }
 
@@ -615,27 +617,27 @@ class PlayerController extends Controller
             'payment_method' => 'required',
             'amount' => 'required|numeric|min:0',
         ];
-    
+
         // Validate incoming request data
         $validator = Validator::make($request->all(), $rules);
-    
+
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'errors' => $validator->errors(),
             ], 400);
         }
-    
+
         try {
             // Extract validated data from the request
             $validatedData = $validator->validated();
-    
+
             // Generate a random 8-digit number for transaction_id
             $validatedData['transaction_id'] = str_pad(mt_rand(1, 99999999), 8, '0', STR_PAD_LEFT);
-    
+
             // Create a new withdraw entry using the Withdraw model
             $withdraw = Withdraw::create($validatedData);
-    
+
             return response()->json([
                 'success' => true,
                 'message' => 'Withdraw entry created successfully',
@@ -649,34 +651,34 @@ class PlayerController extends Controller
             ], 500);
         }
     }
-    
+
     public function approveWithdraw(Request $request)
     {
         $transaction_id = $request->input('transaction_id');
-    
+
         try {
             // Find the withdrawal entry by transaction ID
             $withdraw = Withdraw::where('transaction_id', $transaction_id)->firstOrFail();
-    
+
             // Update withdrawstatus to '1' for approval
             $withdraw->update(['status' => '1']);
-    
+
             // Deduct the withdrawn amount from player's totalcoin and wincoin
             $player = Userdata::where('playerid', $withdraw->userid)->firstOrFail();
-            
+
             // Deduct from totalcoin
             $player->totalcoin -= $withdraw->amount;
-    
+
             // Deduct from wincoin (if applicable)
             if ($withdraw->amount > $player->wincoin) {
                 $player->wincoin = 0;
             } else {
                 $player->wincoin -= $withdraw->amount;
             }
-    
+
             // Save the changes to the player's record
             $player->save();
-    
+
             return response()->json([
                 'success' => true,
                 'message' => 'Withdrawal approved successfully',
@@ -690,18 +692,18 @@ class PlayerController extends Controller
             ], 500);
         }
     }
-        
+
     public function rejectWithdraw(Request $request)
     {
         $transaction_id = $request->input('transaction_id');
-    
+
         try {
             // Find the withdrawal entry by transaction ID
             $withdraw = Withdraw::where('transaction_id', $transaction_id)->firstOrFail();
-    
+
             // Update withdrawstatus to '0' for rejection
             $withdraw->update(['status' => '2']);
-    
+
             return response()->json([
                 'success' => true,
                 'message' => 'Withdrawal rejected successfully',
@@ -722,28 +724,28 @@ class PlayerController extends Controller
             'playerid' => 'required|exists:userdatas,playerid',
             'upiid' => 'required|regex:/^\d+@.+$/',
         ];
-    
+
         // Validate incoming request data
         $validator = Validator::make($request->all(), $rules);
-    
+
         if ($validator->fails()) {
             return response()->json([
                 'success' => false,
                 'errors' => $validator->errors(),
             ], 400);
         }
-    
+
         try {
             // Extract validated data from the request
             $validatedData = $validator->validated();
-    
+
             // Find the user by playerid
             $userData = Userdata::where('playerid', $validatedData['playerid'])->firstOrFail();
-    
+
             // Update the UPI ID
             $userData->upi_id = $validatedData['upiid'];
             $userData->save();
-    
+
             return response()->json([
                 'success' => true,
                 'message' => 'UPI ID updated successfully for player ID: ' . $validatedData['playerid'],
@@ -752,6 +754,67 @@ class PlayerController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to update UPI ID',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function convertWinCoin(Request $request)
+    {
+        $playerId = $request->input('player_id'); // Assuming 'player_id' is the key for player ID in your request
+        $winCoinsToDeduct = $request->input('win_coins'); // Assuming 'win_coins' is the key for win coins in your request
+
+        // Retrieve the player from the database
+        $player = Userdata::where("playerid", $playerId)->first();
+
+        // Check if the player exists
+        if (!$player) {
+            return response()->json(['error' => 'Player not found', 'success' => false], 404);
+        }
+
+        // Check if the player has enough win coins to deduct
+        if ($player->wincoin < $winCoinsToDeduct) {
+            return response()->json(['error' => 'Not enough win coins', 'success' => false], 400);
+        }
+
+        // Deduct win coins and add to total coins
+        $player->wincoin -= $winCoinsToDeduct;
+        $player->totalcoin += $winCoinsToDeduct;
+
+        // Save the changes to the database
+        $player->save();
+
+        return response()->json(['success' => true]);
+    }
+
+    public function getPendingWithdraws(Request $request)
+    {
+        $playerId = $request->input('player_id');
+
+        try {
+            // Retrieve pending withdrawal entries for the specified player (status '0')
+            $pendingWithdraws = Withdraw::where('userid', $playerId)
+                ->where('status', '0')
+                ->get();
+
+            // Check if any pending withdrawals are found
+            if ($pendingWithdraws->isEmpty()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No pending withdrawals found for the specified player',
+                ], 404);
+            }
+
+            // Return the pending withdrawal entries
+            return response()->json([
+                'success' => true,
+                'message' => 'Pending withdrawals retrieved successfully',
+                'data' => $pendingWithdraws,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to retrieve pending withdrawals',
                 'error' => $e->getMessage(),
             ], 500);
         }
