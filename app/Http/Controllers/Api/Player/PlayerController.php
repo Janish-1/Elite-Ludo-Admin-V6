@@ -632,6 +632,15 @@ class PlayerController extends Controller
             // Extract validated data from the request
             $validatedData = $validator->validated();
 
+            $withdraw = Withdraw::where('userid',$validatedData['userid'])->where('status',0)->first();
+
+            if($withdraw){
+                return response()->json([
+                    'success' => false,
+                    'errors' => 'there is already a withdraw.',
+                ]);
+            }
+
             // Generate a random 8-digit number for transaction_id
             $validatedData['transaction_id'] = str_pad(mt_rand(1, 99999999), 8, '0', STR_PAD_LEFT);
 
