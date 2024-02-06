@@ -157,3 +157,7 @@ Route::post('/convertcoin',[PlayerController::class,'convertWinCoin']);
 Route::post('/getwithdrawstatus',[PlayerController::class,'getPendingWithdraws']);
 
 Route::post('/tournament/enter',[TournamentController::class,'enrollPlayerInTournament']);
+
+Route::post('/totalnumbertournament',[TournamentController::class,'getTotalPlayersInTournament']);
+
+Route::post('/alllevelsandrounds',[TournamentController::class,'getAllLevelsAndRoundPrizes']);

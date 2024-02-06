@@ -110,28 +110,42 @@ class TournamentController extends Controller
         $perRoundAmount = $prizePool / $totalRounds;
         $roundPrize = $perRoundAmount / $numTables;
 
-        // Generate a unique random tournament ID with up to 5 characters
-        $tournamentId = Str::random(15);
+        // Calculate minimum bid value
+        $totalPlayersToEnroll = $numTables * (($gameType == '1v1') ? 2 : 4);
+        $minimumBidValue = (($prizePool + (0.2 * $prizePool)) / $totalPlayersToEnroll);
 
-        $tournament = Tournament::create(array_merge($tournamentData, ['tournament_id' => $tournamentId, 't_status' => 'ongoing', 'perroundamount' => $perRoundAmount, 'roundprize' => $roundPrize]));
+        // Check if entry_fee is greater than or equal to minimum_bid_value
+        if ($tournamentData['entry_fee'] >= $minimumBidValue) {
+            // Generate a unique random tournament ID with up to 5 characters
+            $tournamentId = Str::random(15);
 
-        if ($tournament) {
-            for ($i = 1; $i <= $tournament->nooftables; $i++) {
-                // Create tables in TournamentTablemulti
-                $status = ($gameType == '1v1') ? '0/2' : '0/4';
+            $tournament = Tournament::create(array_merge($tournamentData, [
+                'tournament_id' => $tournamentId,
+                't_status' => 'ongoing',
+                'perroundamount' => $perRoundAmount,
+                'roundprize' => $roundPrize,
+            ]));
 
-                TournamentTablemulti::create([
-                    'tournament_id' => $tournamentId,
-                    'table_id' => $i,
-                    'game_name' => $tournament->tournament_name . ' ' . $i,
-                    'player_type' => $gameType,
-                    'status' => $status,
-                ]);
+            if ($tournament) {
+                for ($i = 1; $i <= $tournament->nooftables; $i++) {
+                    // Create tables in TournamentTablemulti
+                    $status = ($gameType == '1v1') ? '0/2' : '0/4';
+
+                    TournamentTablemulti::create([
+                        'tournament_id' => $tournamentId,
+                        'table_id' => $i,
+                        'game_name' => $tournament->tournament_name . ' ' . $i,
+                        'player_type' => $gameType,
+                        'status' => $status,
+                    ]);
+                }
+
+                return redirect('admin/tournament')->with('success', 'Tournament and tables created successfully.');
+            } else {
+                return back()->withErrors(['Failed to create Tournament.']);
             }
-
-            return redirect('admin/tournament')->with('success', 'Tournament and tables created successfully.');
         } else {
-            return redirect('admin/tournament')->with('error', 'Failed to create Tournament.');
+            return back()->withErrors(['Entry fee must be greater than or equal to the minimum bid value.']);
         }
     }
 
@@ -203,10 +217,10 @@ class TournamentController extends Controller
         }
 
         $data1 = Tournament::where('tournament_id', $tournamentId)->first();
-        $reqmoney = (int) $data1->entry_fee;
+        $reqmoney = $data1->entry_fee;
 
         $data2 = Userdata::where('playerid', $playerId)->first();
-        $playermoney = (int) $data2->totalcoin;
+        $playermoney = $data2->totalcoin;
 
         if ($reqmoney > $playermoney) {
             return response()->json(['error' => 'Not Enough Coins'], 400);
@@ -237,7 +251,7 @@ class TournamentController extends Controller
             ]
         );
 
-        return response()->json(['success' => true,'responsemessage' => 'Player enrolled in the tournament successfully.'], 200);
+        return response()->json(['success' => true, 'responsemessage' => 'Player enrolled in the tournament successfully.'], 200);
     }
 
 
@@ -943,5 +957,68 @@ class TournamentController extends Controller
             'message' => 'Successful Run',
             'responsedata' => $playersInGame,
         ]);
+    }
+    public function getTotalPlayersInTournament(Request $request)
+    {
+        $tournamentId = $request->tournament_id;
+        $totalPlayers = UserData::where('tournament_id', $tournamentId)->count();
+
+        if ($totalPlayers > 0) {
+            return response()->json([
+                'success' => true,
+                'total_players' => $totalPlayers,
+                'message' => 'Total number of players in the tournament.',
+            ], 200);
+        } else {
+            return response()->json([
+                'success' => false,
+                'error' => 'No Players Found',
+                'message' => 'No players are currently in the tournament.',
+            ], 404);
+        }
+    }
+    public function getAllLevelsAndRoundPrizes(Request $request)
+    {
+        $tournamentId = $request->tournament_id;
+        $tournament = Tournament::where('tournament_id', $tournamentId)->first();
+
+        if (!$tournament) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Tournament Not Found',
+                'message' => 'Tournament with the specified ID not found.',
+            ], 404);
+        }
+
+        $numTables = $tournament->nooftables;
+        $totalRounds = ($tournament->player_type == '1v1') ? log($numTables, 2) + 1 : log($numTables, 4) + 1;
+
+        $perRoundAmount = $tournament->perroundamount;
+        $roundPrizes = [];
+
+        for ($currentRound = 1; $currentRound <= $totalRounds; $currentRound++) {
+            // Additional logic for each round if needed
+
+            // Retrieve round prize for the current round
+            $roundPrize = $perRoundAmount / $numTables;
+
+            // Calculate player prize for the current round
+            $totalWinners = pow(($tournament->player_type == '1v1') ? 2 : 4, $currentRound - 1);
+            $playerPrize = $roundPrize / $totalWinners;
+
+            // Save the round prize and player prize to the array
+            $roundPrizes[] = [
+                'round_number' => (($totalRounds + 1) - $currentRound),
+                'round_prize' => $roundPrize,
+                'player_prize' => $playerPrize,
+            ];
+        }
+
+        return response()->json([
+            'success' => true,
+            'levels' => $totalRounds,
+            'round_prizes' => $roundPrizes,
+            'message' => 'Levels, round prizes, and player prizes information.',
+        ], 200);
     }
 }
