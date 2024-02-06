@@ -107,7 +107,7 @@ Ongoing Tournaments
                               </p>
                               <br>
                               <strong>Tables:</strong><br>
-
+                              @if($result->player_type == '1v3')
                               <table class="table">
                                 <thead>
                                   <tr>
@@ -199,6 +199,71 @@ Ongoing Tournaments
                                   @endif
                                 </tbody>
                               </table>
+                              @elseif($result->player_type == '1v1')
+                              <table class="table">
+                                <thead>
+                                  <tr>
+                                    <th>#</th>
+                                    <th>Table ID</th>
+                                    <th>Game Name</th>
+                                    <th>Player ID 1</th>
+                                    <th>Player ID 2</th>
+                                    <th>Winner</th>
+                                    <th>Status</th>
+                                    <th>Updated At</th>
+                                    <th>Created At</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  @if(isset($result->tables) && !empty($result->tables))
+                                  @if(isset($result->tables) && !$result->tables->isEmpty())
+                                  @foreach($result->tables as $key => $table)
+                                  <tr>
+                                    <td>{{ $key + 1 }}</td>
+                                    <td>{{ $table->table_id ?? 'N/A' }}</td>
+                                    <td>{{ $table->game_name ?? 'N/A' }}</td>
+                                    @if($table->player_id1)
+                                    <td>
+                                      {{ $table->player_id1 }}
+                                      <a href="{{ url('admin/player/view/' . Crypt::encrypt($table->player_id1)) }}">
+                                        <button type="button" data-toggle="tooltip" data-placement="top" title="View"
+                                          class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton">
+                                          <i class="las la-eye"></i>
+                                        </button>
+                                      </a>
+                                    </td>
+                                    @else
+                                    <td>
+                                      N/A
+                                    </td>
+                                    @endif
+                                    @if($table->player_id2)
+                                    <td>{{ $table->player_id2 ?? 'N/A' }}
+                                      <a href="{{url('admin/player/view/'.Crypt::encrypt($table->player_id2))}}">
+                                        <button type="button" data-toggle="tooltip" data-placement="top" title="View"
+                                          class="btn btn-icon btn-icon rounded-circle btn-success bg-darken-4 border-0 view_buuton"><i
+                                            class="las la-eye"></i>
+                                        </button>
+                                      </a>
+                                    </td>
+                                    @else
+                                    <td>
+                                      N/A
+                                    </td>
+                                    @endif
+                                    <td>{{ $table->winner ?? 'N/A' }}</td>
+                                    <td>{{ $table->status ?? 'N/A' }}</td>
+                                    <td>{{ $table->updated_at ?? 'N/A' }}</td>
+                                    <td>{{ $table->created_at ?? 'N/A' }}</td>
+                                  </tr>
+                                  @endforeach
+                                  @endif
+                                  @endif
+                                </tbody>
+                              </table>
+                              @else
+                              <p>No Data Avaliable</p>
+                              @endif
                             </div>
                           </div>
                         </td>
