@@ -22,25 +22,9 @@ class FirebaseService
         // Check if the reference exists and has a value
         if ($snapshot->exists()) {
             // Decode the JSON value
-            $decodedValue = json_decode($snapshot->getValue(), true);
+            $value = $snapshot->getValue();
 
-            // Check if the decoded value is an array
-            if (is_array($decodedValue)) {
-                // Check if the array has at least two elements
-                if (count($decodedValue) >= 2) {
-                    // Get the second element (index 1) from the array
-                    $secondValue = $decodedValue[1];
-
-                    // Return the second value
-                    return $secondValue;
-                } else {
-                    // Handle the case where the array doesn't have at least two elements
-                    return false;
-                }
-            } else {
-                // Handle the case where the value is not an array
-                return false;
-            }
+            return $value === true;
         } else {
             // Handle the case where the reference doesn't exist
             return false;

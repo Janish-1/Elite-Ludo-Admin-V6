@@ -14,7 +14,7 @@
         "guzzlehttp/guzzle": "^7.0.1",
         "intervention/image": "^2.7",
         "jenssegers/mongodb": "^3.8",
-        "kreait/firebase-php": "^5.26",
+        "kreait/laravel-firebase": "^3.4",
         "laravel/framework": "^8.40",
         "laravel/sanctum": "^2.15",
         "laravel/tinker": "^2.5",
