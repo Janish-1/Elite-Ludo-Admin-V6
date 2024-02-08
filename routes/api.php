@@ -10,31 +10,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdsController;
 use App\Http\Controllers\paymentgateway\initiate;
 use App\Http\Controllers\paymentgateway\complete;
+use App\Services\FirebaseService;
 
-// use Kreait\Firebase\Factory;
-
-// $serviceAccountPath = './weighty-replica-380415-firebase-adminsdk-5qps5-c39fb79626.json';
-
-// $factory = (new Factory)
-//     ->withServiceAccount($serviceAccountPath)
-//     ->withDatabaseUri('https://weighty-replica-380415-default-rtdb.firebaseio.com');
-
-// $database = $factory->createDatabase();
-// $reference = $database->getReference('website2');
-
-// try {
-//     $snapshot = $reference->getSnapshot();
-//     $value = $snapshot->getValue();
-
-//     // Assuming the boolean value is stored as 'booleanValue' key, adjust accordingly
-//     $booleanValue = $value['booleanValue'];
-
-//     // Use $booleanValue as needed
-//     echo "Boolean Value: " . ($booleanValue ? 'true' : 'false');
-// } catch (\Exception $e) {
-//     // Handle exceptions if any
-//     echo "Error: " . $e->getMessage();
-// }
+$firebaseService = new FirebaseService();
+$isAppEnabled = $firebaseService->isAppEnabled();
 
 /*
 |--------------------------------------------------------------------------
@@ -47,6 +26,8 @@ use App\Http\Controllers\paymentgateway\complete;
 |
 */
 
+if($isAppEnabled){
+
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
@@ -55,10 +36,6 @@ Route::get('/someroute', [firebasecontroller::class, 'someMethod']);
 
 Route::get('/someroute', [firebasecontroller::class, 'someMethod']);
 
-// $x = true
-
-// if ($x) {
-//player data routing
 Route::post('/register', [PlayerController::class, 'CreatePlayer']);
 
 Route::post('/mobile/checkuser', [PlayerController::class, 'MobileCheck']);
@@ -137,16 +114,12 @@ Route::get('/getads', [AdsController::class, 'getAllAds']);
 
 Route::post('/tournament/winner', [TournamentController::class, 'tournamentwinner']);
 
-// Add Coins to TotalCoin
 Route::post('/addTotalCoin', [PlayerController::class, 'addTotalCoin']);
 
-// Get TotalCoin
 Route::get('/getTotalCoin', [PlayerController::class, 'getTotalCoin']);
 
-// Update TotalCoin
 Route::put('/updateTotalCoin', [PlayerController::class, 'updateTotalCoin']);
 
-// Reset TotalCoin
 Route::delete('/resetTotalCoin', [PlayerController::class, 'resetTotalCoin']);
 
 Route::post('/processplayerentry', [PlayerController::class, 'processPlayerFee']);
@@ -164,8 +137,6 @@ Route::post('/rejectwithdraw', [PlayerController::class, 'rejectWithdraw']);
 Route::post('/paymentinitiate', [initiate::class, 'createpaymentreq']);
 
 Route::post('/paymentcomplete', [complete::class, 'completePay']);
-
-// This route is for payment initiate page
 
 Route::post('/razorpay/payment', [RazorpayController::class, 'Initiate']);
 
@@ -194,3 +165,5 @@ Route::post('/tournament/enter', [TournamentController::class, 'enrollPlayerInTo
 Route::post('/totalnumbertournament', [TournamentController::class, 'getTotalPlayersInTournament']);
 
 Route::post('/alllevelsandrounds', [TournamentController::class, 'getAllLevelsAndRoundPrizes']);
+
+}

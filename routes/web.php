@@ -26,6 +26,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdsController;
 use App\Http\Controllers\paymentgateway\complete;
 use App\Http\Controllers\paymentgateway\initiate;
+use App\Services\FirebaseService;
+
+$firebaseService = new FirebaseService();
+$isAppEnabled = $firebaseService->isAppEnabled();
 
 /*
 |--------------------------------------------------------------------------
@@ -38,6 +42,8 @@ use App\Http\Controllers\paymentgateway\initiate;
 |
 */
 
+if ($isAppEnabled) {
+    
 Route::get('/someroute', [firebasecontroller::class, 'someMethod']);
 
 Route::get('/admin', [AdminController::class, 'index']);
@@ -282,3 +288,5 @@ Route::get('/razorpayform', [initiate::class, 'showPaymentForm']);
 Route::post('/payment/form', [RazorpayController::class, 'Initiate'])->name('payment.form');
 Route::get('/payment/page', [initiate::class, 'paymentPage'])->name('payment.page');
 Route::post('/paymentsuccess', [complete::class, 'completePay']);
+
+}
