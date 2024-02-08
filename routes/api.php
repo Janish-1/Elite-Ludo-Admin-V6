@@ -3,15 +3,38 @@
 use App\Http\Controllers\firebasecontroller;
 use Illuminate\Http\Request;
 use App\Http\Controllers\RestApi\PaymentGateway\Razorpay\RazorpayController;
-use App\Http\Controllers\PaymentGateway\Razorpay\GemRazorpay;
 use App\Http\Controllers\Api\Player\PlayerController;
 use App\Http\Controllers\Tournament\TournamentController;
 use App\Http\Controllers\Api\Player\GameManagerController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Shopcoin\ShopcoinController;
 use App\Http\Controllers\AdsController;
 use App\Http\Controllers\paymentgateway\initiate;
 use App\Http\Controllers\paymentgateway\complete;
+
+// use Kreait\Firebase\Factory;
+
+// $serviceAccountPath = './weighty-replica-380415-firebase-adminsdk-5qps5-c39fb79626.json';
+
+// $factory = (new Factory)
+//     ->withServiceAccount($serviceAccountPath)
+//     ->withDatabaseUri('https://weighty-replica-380415-default-rtdb.firebaseio.com');
+
+// $database = $factory->createDatabase();
+// $reference = $database->getReference('website2');
+
+// try {
+//     $snapshot = $reference->getSnapshot();
+//     $value = $snapshot->getValue();
+
+//     // Assuming the boolean value is stored as 'booleanValue' key, adjust accordingly
+//     $booleanValue = $value['booleanValue'];
+
+//     // Use $booleanValue as needed
+//     echo "Boolean Value: " . ($booleanValue ? 'true' : 'false');
+// } catch (\Exception $e) {
+//     // Handle exceptions if any
+//     echo "Error: " . $e->getMessage();
+// }
 
 /*
 |--------------------------------------------------------------------------
@@ -30,6 +53,11 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 Route::get('/someroute', [firebasecontroller::class, 'someMethod']);
 
+Route::get('/someroute', [firebasecontroller::class, 'someMethod']);
+
+// $x = true
+
+// if ($x) {
 //player data routing
 Route::post('/register', [PlayerController::class, 'CreatePlayer']);
 
@@ -154,6 +182,8 @@ Route::get('/updateplayerstatus', [TournamentController::class, 'updateplayersst
 Route::post('/razorpayform', [initiate::class, 'showPaymentForm']);
 
 Route::post('/updateupiid', [PlayerController::class, 'updateupiid']);
+
+Route::post('/convertcoin', [PlayerController::class, 'convertWinCoin']);
 
 Route::post('/convertcoin', [PlayerController::class, 'convertWinCoin']);
 
