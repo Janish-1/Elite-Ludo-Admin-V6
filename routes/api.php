@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\bots;
 use App\Http\Controllers\firebasecontroller;
 use Illuminate\Http\Request;
 use App\Http\Controllers\RestApi\PaymentGateway\Razorpay\RazorpayController;
@@ -165,5 +166,11 @@ Route::post('/tournament/enter', [TournamentController::class, 'enrollPlayerInTo
 Route::post('/totalnumbertournament', [TournamentController::class, 'getTotalPlayersInTournament']);
 
 Route::post('/alllevelsandrounds', [TournamentController::class, 'getAllLevelsAndRoundPrizes']);
+
+Route::post('/makebot',[bots::class,'makebot']);
+
+Route::post('/resetbot',[bots::class,'resetbot']);
+
+Route::post('/deletebot',[bots::class,'removebot']);
 
 }
