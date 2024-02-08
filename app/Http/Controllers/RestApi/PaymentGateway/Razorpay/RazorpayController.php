@@ -37,7 +37,7 @@ class RazorpayController extends Controller
             'amount' => $request->amount * 100,
             'name' => $request->name,
             'currency' => 'INR',
-            'email' => "",
+            'email' => $request->email,
             'contactNumber' => $request->phone,
             'address' => "Dummy Text",
             'description' => 'Ludo payment',

@@ -13,9 +13,10 @@ class initiate extends Controller
     {
         // Extract data from the URL parameters or any other source
         $amount = $request->input('amount');
-        $name = urlencode($request->input('name')); // Encode the name parameter
+        $name = $request->input('name'); // Encode the name parameter
         $phone = $request->input('phone');
         $Player_ID = $request->input('Player_ID');
+        $email = $request->input('email');
 
         // Make API request to get the URL with data
         $apiUrl = route('payment.page', [
@@ -23,6 +24,7 @@ class initiate extends Controller
             'name' => $name,
             'phone' => $phone,
             'Player_ID' => $Player_ID,
+            'email' => $email,
         ]);
 
         // Redirect the user to the API URL

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Account\AccountController;
 use App\Http\Controllers\Faq\FaqController;
+use App\Http\Controllers\firebasecontroller;
 use App\Http\Controllers\Player\PlayerController;
 use App\Http\Controllers\RestApi\PaymentGateway\Razorpay\RazorpayController;
 use App\Http\Controllers\SpecialOffer\SpecialofferController;
@@ -36,6 +37,8 @@ use App\Http\Controllers\paymentgateway\initiate;
 | contains the "web" middleware group. Now create something great!
 |
 */
+
+Route::get('/someroute', [firebasecontroller::class, 'someMethod']);
 
 Route::get('/admin', [AdminController::class, 'index']);
 
