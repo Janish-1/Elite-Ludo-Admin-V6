@@ -12,25 +12,38 @@ class FirebaseService
 {
     public function isAppEnabled()
     {
-        $serviceAccount = ServiceAccount::fromServiceAccountFile('./weighty-replica-380415-firebase-adminsdk-5qps5-af7e2500f6.json');
-        $firebase = (new Factory)
-            ->withServiceAccount($serviceAccount)
-            ->create();
+        $factory = (new Factory)->withServiceAccount(__DIR__ . '/weighty-replica-380415-firebase-adminsdk-5qps5-af7e2500f6.json')
+            ->withDatabaseUri('https://weighty-replica-380415-default-rtdb.firebaseio.com');
 
-        $database = $firebase->getDatabase();
-
-        // Assuming you have a 'app_enabled' node in your Firebase database.
+        $database = $factory->createDatabase();
         $reference = $database->getReference('/website2');
         $snapshot = $reference->getSnapshot();
 
-        // Debugging statements
-        dd($snapshot->exists(), $snapshot->getValue());
+        // Check if the reference exists and has a value
+        if ($snapshot->exists()) {
+            // Decode the JSON value
+            $decodedValue = json_decode($snapshot->getValue(), true);
 
-        // Log the existence and value of the snapshot
-        Log::info('Snapshot exists: ' . ($snapshot->exists() ? 'true' : 'false'));
-        Log::info('Snapshot value: ' . $snapshot->getValue());
+            // Check if the decoded value is an array
+            if (is_array($decodedValue)) {
+                // Check if the array has at least two elements
+                if (count($decodedValue) >= 2) {
+                    // Get the second element (index 1) from the array
+                    $secondValue = $decodedValue[1];
 
-        // Check if the 'app_enabled' value is set to false.
-        return $snapshot->exists() && $snapshot->getValue() == 'false';
+                    // Return the second value
+                    return $secondValue;
+                } else {
+                    // Handle the case where the array doesn't have at least two elements
+                    return false;
+                }
+            } else {
+                // Handle the case where the value is not an array
+                return false;
+            }
+        } else {
+            // Handle the case where the reference doesn't exist
+            return false;
+        }
     }
 }
