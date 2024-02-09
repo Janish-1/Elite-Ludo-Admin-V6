@@ -47,5 +47,6 @@ class Userdata extends Model
         "table_id",
         "bid_pay_status",
         "kyc_completed",
+        "is_bot",
     ];
 }
