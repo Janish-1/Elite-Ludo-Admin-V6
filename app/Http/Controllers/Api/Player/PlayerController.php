@@ -117,11 +117,8 @@ class PlayerController extends Controller
 
     public function PlayerDeatils(Request $request)
     {
-        $PlayerCoin = Userdata::where('playerid', $request->playerid)->first();
-        $UpdateCoin = $PlayerCoin['totalcoin'] + $PlayerCoin['wincoin'] + $PlayerCoin['refrelCoin'];
-        $UpdateData = Userdata::where('playerid', $request->playerid)->update([
-            "playcoin" => $UpdateCoin,
-        ]);
+        $UpdateData = Userdata::where('playerid', $request->playerid)->first();
+
         if ($UpdateData) {
             $userdata = Userdata::where('playerid', $request->playerid)->first();
         } else {
@@ -129,11 +126,7 @@ class PlayerController extends Controller
             return response($response, 200);
         }
 
-        $bid = Bid::get();
-        $shopcoin = Shopcoin::get();
-        $gameConfig = Websetting::first();
-
-        $response = ["message" => 'All Details Fetched Successfully', 'playerdata' => $userdata, 'bidvalues' => $bid, 'gameconfig' => $gameConfig, 'shop_coin' => $shopcoin, 'kyc_completed' => $userdata ? (bool) $userdata->kyc_completed : false];
+        $response = ["message" => 'All Details Fetched Successfully', 'playerdata' => $userdata, 'kyc_completed' => $userdata ? (bool) $userdata->kyc_completed : false];
         return response($response, 200);
     }
 
