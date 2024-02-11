@@ -961,13 +961,16 @@ class TournamentController extends Controller
     public function getTotalPlayersInTournament(Request $request)
     {
         $tournamentId = $request->tournament_id;
-        $totalPlayers = UserData::where('tournament_id', $tournamentId)->count();
-
-        if ($totalPlayers > 0) {
+    
+        $players = UserData::where('tournament_id', $tournamentId)
+            ->select('playerid', 'photo') // Add any additional columns you need
+            ->get();
+    
+        if ($players->count() > 0) {
             return response()->json([
                 'success' => true,
-                'total_players' => $totalPlayers,
-                'message' => 'Total number of players in the tournament.',
+                'players' => $players,
+                'message' => 'All players in the tournament with pfp and player ID.',
             ], 200);
         } else {
             return response()->json([
