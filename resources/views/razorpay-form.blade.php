@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,24 +15,42 @@
             height: 100vh;
             margin: 0;
             background-color: #f8f9fa;
+            position: relative;
         }
 
         form {
+            position: relative;
+            /* Add position relative to allow absolute positioning of loading bar */
             width: 90%;
             max-width: 400px;
             background-color: #ffffff;
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+            /* Ensure the form stays above the loading bar */
         }
 
         .form-group {
             margin-bottom: 20px;
         }
+
+        .loading-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 20px;
+            color: #333;
+        }
+
     </style>
 </head>
+
 <body>
-<form id="paymentForm" action="{{ route('payment.form') }}" method="POST">
+<div class="loading-text" id="loadingText">Now Loading...</div>
+
+    <form id="paymentForm" action="{{ route('payment.form') }}" method="POST" style="display:none;">
         @csrf <!-- CSRF token for Laravel -->
 
         <div class="form-group">
@@ -46,7 +65,7 @@
 
         <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" class="form-control" id="email" name="email" value="{{ $email }}"required>
+            <input type="email" class="form-control" id="email" name="email" value="{{ $email }}" required>
         </div>
 
         <div class="form-group">
@@ -72,7 +91,8 @@
             if (queryString) {
                 document.getElementById("paymentForm").submit();
             }
-        });
+        });    
     </script>
 </body>
+
 </html>
