@@ -147,7 +147,7 @@ Route::post('/paymentsuccess', [complete::class, 'completePay']);
 
 Route::post('/testpayment', [RazorpayController::class, 'createpaymentreq']);
 
-Route::post('/tournamentautomate', [TournamentController::class, 'newnextround']);
+Route::get('/tournamentautomate', [TournamentController::class, 'newnextround']);
 
 Route::get('/updateplayerstatus', [TournamentController::class, 'updateplayersstatus']);
 
