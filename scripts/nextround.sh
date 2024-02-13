@@ -1,1 +1,0 @@
-curl https://boomlly.com/api/tournamentautomate
