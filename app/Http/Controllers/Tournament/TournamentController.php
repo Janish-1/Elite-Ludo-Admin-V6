@@ -801,6 +801,7 @@ class TournamentController extends Controller
                             'table_id' => $i,
                             'game_name' => $tournament->tournament_name . ' ' . $i,
                             'player_type' => $gametype,
+                            'status' => ($gametype === '1v1') ? '0/2' : '0/4'
                         ]);
                     }
 
