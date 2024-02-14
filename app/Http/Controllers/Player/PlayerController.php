@@ -114,7 +114,7 @@ class PlayerController extends Controller
     if ($response) {
       return response(array("data" => $response), 200)->header("Content-Type", "application/json");
     } else {
-      return response(array("notice" => "Data Not Delete"), 404)->header("Content-Type", "application/json");
+      return response(array("notice" => "Data Not Delete"), 200)->header("Content-Type", "application/json");
     }
   }
 
@@ -126,7 +126,7 @@ class PlayerController extends Controller
     if ($response) {
       return response(array("data" => $response), 200)->header("Content-Type", "application/json");
     } else {
-      return response(array("notice" => "Data Not Delete"), 404)->header("Content-Type", "application/json");
+      return response(array("notice" => "Data Not Delete"), 200)->header("Content-Type", "application/json");
     }
   }
 
@@ -226,7 +226,7 @@ class PlayerController extends Controller
     if ($response) {
       return response(array("notice" => "Data Delete Success"), 200)->header("Content-Type", "application/json");
     } else {
-      return response(array("notice" => "Data Not Delete"), 404)->header("Content-Type", "application/json");
+      return response(array("notice" => "Data Not Delete"), 200)->header("Content-Type", "application/json");
     }
   }
 

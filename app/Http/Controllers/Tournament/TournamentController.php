@@ -179,7 +179,7 @@ class TournamentController extends Controller
             $games = TournamentTablemulti::where('tournament_id', $tournamentId)->get();
 
             if ($games->isEmpty()) {
-                return response()->json(['error' => 'No tables found for the tournament.'], 404);
+                return response()->json(['error' => 'No tables found for the tournament.'], 200);
             }
             if ($games->isNotEmpty()) {
                 return response()->json([
@@ -188,7 +188,7 @@ class TournamentController extends Controller
                 ], 200);
             }
         } else {
-            return response()->json(['error' => 'Tournament not found.'], 404);
+            return response()->json(['error' => 'Tournament not found.'], 200);
         }
     }
 
@@ -203,7 +203,7 @@ class TournamentController extends Controller
                 'tournament' => $tournament,
             ], 200);
         } else {
-            return response()->json(['error' => 'Tournament not found.'], 404);
+            return response()->json(['error' => 'Tournament not found.'], 200);
         }
     }
 
@@ -213,7 +213,7 @@ class TournamentController extends Controller
         $playerId = $request->input('player_id');
 
         if (!$playerId || !$tournamentId) {
-            return response()->json(['error' => 'Player ID or tournament ID is missing.'], 400);
+            return response()->json(['error' => 'Player ID or tournament ID is missing.'], 200);
         }
 
         $data1 = Tournament::where('tournament_id', $tournamentId)->first();
@@ -223,7 +223,7 @@ class TournamentController extends Controller
         $playermoney = $data2->totalcoin;
 
         if ($reqmoney > $playermoney) {
-            return response()->json(['error' => 'Not Enough Coins'], 400);
+            return response()->json(['error' => 'Not Enough Coins'], 200);
         }
 
         $data2->totalcoin -= $reqmoney;
@@ -234,13 +234,13 @@ class TournamentController extends Controller
             ->exists();
 
         if ($playerInGame) {
-            return response()->json(['error' => 'Player is already engaged in a game.'], 400);
+            return response()->json(['error' => 'Player is already engaged in a game.'], 200);
         }
 
         $tournament = Tournament::where('tournament_id', $tournamentId)->first();
 
         if (!$tournament) {
-            return response()->json(['error' => 'Tournament not found.'], 404);
+            return response()->json(['error' => 'Tournament not found.'], 200);
         }
 
         $userData = UserData::updateOrCreate(
@@ -262,14 +262,14 @@ class TournamentController extends Controller
 
         // Check if the player ID and table ID are provided
         if (!$playerId || !$tableId) {
-            return response()->json(['error' => 'Player ID or table ID is missing.'], 400);
+            return response()->json(['error' => 'Player ID or table ID is missing.'], 200);
         }
 
         $userData = UserData::where('playerid', $playerId)->first();
 
         // Check if userdata and tournament ID are available
         if (!$userData || !$userData->tournament_id) {
-            return response()->json(['error' => 'Tournament information not found for the player.'], 404);
+            return response()->json(['error' => 'Tournament information not found for the player.'], 200);
         }
 
         $tableModel = null;
@@ -279,14 +279,14 @@ class TournamentController extends Controller
             ->exists();
 
         if ($playerInGame) {
-            return response()->json(['error' => 'Player is already engaged in a game.'], 400);
+            return response()->json(['error' => 'Player is already engaged in a game.'], 200);
         }
 
         // Retrieve the tournament instance by ID
         $tournament = Tournament::where('tournament_id', $userData->tournament_id)->first();
 
         if (!$tournament) {
-            return response()->json(['error' => 'Tournament not found.'], 404);
+            return response()->json(['error' => 'Tournament not found.'], 200);
         }
 
         if ($tournament->player_type === '1v1') {
@@ -297,7 +297,7 @@ class TournamentController extends Controller
                 ->first();
 
             if (!$table) {
-                return response()->json(['error' => 'Table not found for the tournament.'], 404);
+                return response()->json(['error' => 'Table not found for the tournament.'], 200);
             }
 
             // Check available slots and enroll the player accordingly
@@ -332,7 +332,7 @@ class TournamentController extends Controller
                 ->first();
 
             if (!$table) {
-                return response()->json(['error' => 'Table not found for the tournament.'], 404);
+                return response()->json(['error' => 'Table not found for the tournament.'], 200);
             }
 
             // Check available slots and enroll the player accordingly
@@ -363,7 +363,7 @@ class TournamentController extends Controller
             // Save changes to the table instance
             $table->save();
         } else {
-            return response()->json(['error' => 'Invalid game type for the tournament.'], 400);
+            return response()->json(['error' => 'Invalid game type for the tournament.'], 200);
         }
 
         return response()->json(['success' => 'Player enrolled in table successfully.'], 200);
@@ -384,7 +384,7 @@ class TournamentController extends Controller
             // Redirect to the specified URL after successful deletion
             return redirect('admin/tournament')->with('success', 'Tournament and associated tables deleted successfully.');
         } else {
-            return response()->json(['error' => 'Tournament not found.'], 404);
+            return response()->json(['error' => 'Tournament not found.'], 200);
         }
     }
 
@@ -416,7 +416,7 @@ class TournamentController extends Controller
 
         // Check if the player ID is provided
         if (!$playerId) {
-            return Response::json(['error' => 'Player ID is missing.'], 400);
+            return Response::json(['error' => 'Player ID is missing.'], 200);
         }
 
         $playerFoundDetails = [];
@@ -482,7 +482,7 @@ class TournamentController extends Controller
 
         // Check if the player ID is provided
         if (!$playerId) {
-            return Response::json(['error' => 'Player ID is missing.'], 400);
+            return Response::json(['error' => 'Player ID is missing.'], 200);
         }
 
         // Find player in TournamentTablemulti
@@ -536,13 +536,13 @@ class TournamentController extends Controller
         $ntables = $request->input('no_of_tables');
 
         if (!$tournamentId) {
-            return response()->json(['error' => 'No Tournament ID Found'], 400);
+            return response()->json(['error' => 'No Tournament ID Found'], 200);
         }
 
         $typeoftournament = Tournament::where('tournament_id', $tournamentId)->get();
 
         if ($typeoftournament->isEmpty()) {
-            return response()->json(['error' => 'Tournament not found'], 404);
+            return response()->json(['error' => 'Tournament not found'], 200);
         }
 
         $tournament = $typeoftournament->first();
@@ -554,7 +554,7 @@ class TournamentController extends Controller
             ->get(['winner']);
 
         if ($winnersData->isEmpty()) {
-            return response()->json(['error' => 'No winners found for 1v1 tournament'], 404);
+            return response()->json(['error' => 'No winners found for 1v1 tournament'], 200);
         }
 
         // Delete existing tables related to the tournament ID
@@ -646,13 +646,13 @@ class TournamentController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => 'Player not found',
-                ], 404);
+                ], 200);
             }
         } else {
             return response()->json([
                 'success' => false,
                 'message' => 'Tournament or winner not found or winner does not match',
-            ], 404);
+            ], 200);
         }
     }
 
@@ -662,7 +662,7 @@ class TournamentController extends Controller
 
         // Check if the player ID is provided
         if (!$playerId) {
-            return Response::json(['error' => 'Player ID is missing.'], 400);
+            return Response::json(['error' => 'Player ID is missing.'], 200);
         }
 
         $playerFoundDetails = [];
@@ -733,7 +733,7 @@ class TournamentController extends Controller
                 'success' => false,
                 'error' => 'No Ongoing Tournaments Found',
                 'responsemessage' => 'No Ongoing Tournaments Found'
-            ], 404);
+            ], 200);
         }
 
         foreach ($ongoingTournaments as $tournament) {
@@ -898,13 +898,13 @@ class TournamentController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => 'Player not found',
-                ], 404);
+                ], 200);
             }
         } else {
             return response()->json([
                 'success' => false,
                 'message' => 'Tournament or winner not found or winner does not match',
-            ], 404);
+            ], 200);
         }
     }
 
@@ -978,7 +978,7 @@ class TournamentController extends Controller
                 'success' => false,
                 'error' => 'No Players Found',
                 'message' => 'No players are currently in the tournament.',
-            ], 404);
+            ], 200);
         }
     }
     public function getAllLevelsAndRoundPrizes(Request $request)
@@ -991,7 +991,7 @@ class TournamentController extends Controller
                 'success' => false,
                 'error' => 'Tournament Not Found',
                 'message' => 'Tournament with the specified ID not found.',
-            ], 404);
+            ], 200);
         }
 
         $numTables = $tournament->nooftables;

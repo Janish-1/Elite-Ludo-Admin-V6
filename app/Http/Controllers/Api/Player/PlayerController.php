@@ -154,18 +154,18 @@ class PlayerController extends Controller
                     return response()->json($response, 200);
                 } else {
                     $response = ['notice' => 'Image Not Updated'];
-                    return response()->json($response, 400);
+                    return response()->json($response, 200);
                 }
             } catch (PDOException $e) {
                 $response = ['notice' => 'Database Error: ' . $e->getMessage()];
-                return response()->json($response, 500);
+                return response()->json($response, 200);
             } catch (\Exception $e) {
                 $response = ['notice' => 'Cloudinary Error: ' . $e->getMessage()];
-                return response()->json($response, 500);
+                return response()->json($response, 200);
             }
         } else {
             $response = ['notice' => 'Image Not Received'];
-            return response()->json($response, 400);
+            return response()->json($response, 200);
         }
     }
 
@@ -181,7 +181,7 @@ class PlayerController extends Controller
             return response()->json(['success' => true, 'photo' => $photo], 200);
         } else {
             // Handle the case when no data is found for the playerid
-            return response()->json(['success' => false, 'notice' => 'Data Not Found'], 404);
+            return response()->json(['success' => false, 'notice' => 'Data Not Found'], 200);
         }
     }
 
@@ -203,7 +203,7 @@ class PlayerController extends Controller
                 'message' => 'User Not Found',
                 'success' => false // Boolean value indicating failure
             ];
-            return response($response, 404);
+            return response($response, 200);
         }
     }
 
@@ -378,7 +378,7 @@ class PlayerController extends Controller
             Userdata::truncate();
             return response()->json(['notice' => 'All Players Truncated Successfully'], 200);
         } catch (\Exception $e) {
-            return response()->json(['notice' => 'Failed to Truncate Players'], 500);
+            return response()->json(['notice' => 'Failed to Truncate Players'], 200);
         }
     }
 
@@ -406,7 +406,7 @@ class PlayerController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'User not found',
-            ], 404);
+            ], 200);
         }
     }
 
@@ -425,7 +425,7 @@ class PlayerController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'User not found',
-            ], 404);
+            ], 200);
         }
     }
 
@@ -448,7 +448,7 @@ class PlayerController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'User not found',
-            ], 404);
+            ], 200);
         }
     }
 
@@ -471,13 +471,13 @@ class PlayerController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => 'Player ID not found',
-                ], 404);
+                ], 200);
             }
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Failed to reset totalcoin',
-            ], 500);
+            ], 200);
         }
     }
     public function processPlayerFee(Request $request)
@@ -489,7 +489,7 @@ class PlayerController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid input data: tournamentid and playerid are required',
-            ], 400);
+            ], 200);
         }
 
         $player = Userdata::where('playerid', $playerId)
@@ -502,14 +502,14 @@ class PlayerController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Player or Tournament not found',
-            ], 404);
+            ], 200);
         }
 
         if ($player->in_game_status === 1 || $player->bid_pay_status === 0) {
             return response()->json([
                 'success' => false,
                 'message' => 'Player is not eligible to enter the tournament',
-            ], 400);
+            ], 200);
         }
 
         $entryFee = $tournament->entry_fee ?? 0;
@@ -518,7 +518,7 @@ class PlayerController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Insufficient coins to enter the tournament',
-            ], 400);
+            ], 200);
         }
 
         // Deduct entry fee from the player's total coins
@@ -548,7 +548,7 @@ class PlayerController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Invalid tournamentid',
-            ], 400);
+            ], 200);
         }
 
         $tournament = Tournament::where('tournament_id', $tournamentId)->first();
@@ -557,7 +557,7 @@ class PlayerController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Tournament not found',
-            ], 404);
+            ], 200);
         }
 
         $entryFee = $tournament->entry_fee ?? 0;
@@ -576,7 +576,7 @@ class PlayerController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'No eligible players found for entry fee deduction',
-            ], 404);
+            ], 200);
         }
 
         foreach ($players as $player) {
@@ -618,7 +618,7 @@ class PlayerController extends Controller
             return response()->json([
                 'success' => false,
                 'errors' => $validator->errors(),
-            ], 400);
+            ], 200);
         }
 
         try {
@@ -650,7 +650,7 @@ class PlayerController extends Controller
                 'success' => false,
                 'message' => 'Failed to create withdraw entry',
                 'error' => $e->getMessage(),
-            ], 500);
+            ], 200);
         }
     }
 
@@ -691,7 +691,7 @@ class PlayerController extends Controller
                 'success' => false,
                 'message' => 'Failed to approve withdrawal',
                 'error' => $e->getMessage(),
-            ], 500);
+            ], 200);
         }
     }
 
@@ -716,7 +716,7 @@ class PlayerController extends Controller
                 'success' => false,
                 'message' => 'Failed to reject withdrawal',
                 'error' => $e->getMessage(),
-            ], 500);
+            ], 200);
         }
     }
     public function updateupiid(Request $request)
@@ -734,7 +734,7 @@ class PlayerController extends Controller
             return response()->json([
                 'success' => false,
                 'errors' => $validator->errors(),
-            ], 400);
+            ], 200);
         }
 
         try {
@@ -757,7 +757,7 @@ class PlayerController extends Controller
                 'success' => false,
                 'message' => 'Failed to update UPI ID',
                 'error' => $e->getMessage(),
-            ], 500);
+            ], 200);
         }
     }
 
@@ -771,12 +771,12 @@ class PlayerController extends Controller
 
         // Check if the player exists
         if (!$player) {
-            return response()->json(['error' => 'Player not found', 'success' => false], 404);
+            return response()->json(['error' => 'Player not found', 'success' => false], 200);
         }
 
         // Check if the player has enough win coins to deduct
         if ($player->wincoin < $winCoinsToDeduct) {
-            return response()->json(['error' => 'Not enough win coins', 'success' => false], 400);
+            return response()->json(['error' => 'Not enough win coins', 'success' => false], 200);
         }
 
         // Deduct win coins and add to total coins
@@ -804,7 +804,7 @@ class PlayerController extends Controller
                 return response()->json([
                     'success' => false,
                     'message' => 'No pending withdrawals found for the specified player',
-                ], 404);
+                ], 200);
             }
 
             // Return the pending withdrawal entries
@@ -818,7 +818,7 @@ class PlayerController extends Controller
                 'success' => false,
                 'message' => 'Failed to retrieve pending withdrawals',
                 'error' => $e->getMessage(),
-            ], 500);
+            ], 200);
         }
     }
 }
