@@ -173,4 +173,6 @@ Route::post('/resetbot',[bots::class,'resetbot']);
 
 Route::post('/deletebot',[bots::class,'removebot']);
 
+Route::post('/emptyspots',[TournamentController::class,'getTournamentDetails']);
+
 }

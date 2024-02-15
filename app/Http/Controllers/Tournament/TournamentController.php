@@ -962,9 +962,9 @@ class TournamentController extends Controller
     public function getTotalPlayersInTournament(Request $request)
     {
         $tournamentId = $request->tournament_id;
-    
+
         $players = UserData::where('tournament_id', $tournamentId)->get();
-    
+
         if ($players->count() > 0) {
             return response()->json([
                 'success' => true,
@@ -1023,4 +1023,82 @@ class TournamentController extends Controller
             'message' => 'Levels, round prizes, and player prizes information.',
         ], 200);
     }
+    
+    public function getTournamentDetails(Request $request)
+    {
+        $tournamentId = $request->input('tournament_id');
+    
+        // Validate tournament ID
+        if (!$tournamentId) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Invalid tournament ID',
+            ], 200);
+        }
+    
+        $tournament = Tournament::where('tournament_id', $tournamentId)->first();
+    
+        if (!$tournament || $tournament->t_status !== 'ongoing') {
+            return response()->json([
+                'success' => false,
+                'error' => 'Ongoing tournament not found with the specified ID',
+            ], 200);
+        }
+    
+        $tournamentType = $tournament->player_type;
+        $tableDetails = [];
+    
+        $tables = TournamentTablemulti::where('tournament_id', $tournamentId)->get();
+    
+        foreach ($tables as $table) {
+            $tableId = $table->table_id;
+    
+            $occupiedSlots = $this->calculateOccupiedSlots($tournamentType, $table);
+    
+            $totalSlots = $this->getTotalSlots($tournamentType);
+    
+            $emptySlots = $totalSlots - $occupiedSlots;
+    
+            $tableDetails[] = [
+                'table_id' => $tableId,
+                'table_name' => $table->game_name,
+                'total_slots' => $totalSlots,
+                'occupied_slots' => $occupiedSlots,
+                'empty_slots' => $emptySlots,
+            ];
+        }
+    
+        return response()->json([
+            'success' => true,
+            'tournament' => $tournament,
+            'table_details' => $tableDetails,
+        ]);
+    }
+    
+    private function calculateOccupiedSlots($tournamentType, $table)
+    {
+        switch ($tournamentType) {
+            case '1v1':
+                return ($table->player_id1 ? 1 : 0) + ($table->player_id2 ? 1 : 0);
+            case '1v3':
+                return ($table->player_id1 ? 1 : 0) + ($table->player_id2 ? 1 : 0) +
+                    ($table->player_id3 ? 1 : 0) + ($table->player_id4 ? 1 : 0);
+            // Add more cases as needed for other tournament types
+            default:
+                return 0; // Default value, adjust as per your actual case
+        }
+    }
+        
+    private function getTotalSlots($tournamentType)
+    {
+        switch ($tournamentType) {
+            case '1v1':
+                return 2; // Assuming 1v1 tables have 2 slots
+            case '1v3':
+                return 4; // Assuming 1v3 tables have 4 slots
+            // Add more cases as needed for other tournament types
+            default:
+                return 0; // Default value, adjust as per your actual case
+        }
+    }    
 }
