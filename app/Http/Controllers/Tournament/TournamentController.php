@@ -963,7 +963,7 @@ class TournamentController extends Controller
     {
         $tournamentId = $request->tournament_id;
 
-        $players = UserData::where('tournament_id', $tournamentId)->get();
+        $players = UserData::where('tournament_id', $tournamentId)->select('username', 'photo')->get();
 
         if ($players->count() > 0) {
             return response()->json([
