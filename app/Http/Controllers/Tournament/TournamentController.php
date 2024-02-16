@@ -743,7 +743,7 @@ class TournamentController extends Controller
                 $totalwinners = TournamentTablemulti::where('tournament_id', $tournamentid)->whereNotNull('winner')->count();
                 $totalnumberoftables = TournamentTablemulti::where('tournament_id', $tournamentid)->count();
 
-                if ($totalwinners === 1) {
+                if ($totalwinners === 1 && $totalwinners == $totalnumberoftables) {
                     // If there is only one winner and one table
                     $winner = TournamentTablemulti::where('tournament_id', $tournament->tournament_id)->whereNotNull('winner')->first();
                     $winningPlayerId = $winner->winner;
