@@ -179,8 +179,11 @@ class TournamentController extends Controller
             $games = TournamentTablemulti::where('tournament_id', $tournamentId)->get();
 
             if ($games->isEmpty()) {
-                return response()->json(['error' => 'No tables found for the tournament.'], 200);
+                return response()->json([
+                    'tournament' => $tournament,
+                ], 200);
             }
+
             if ($games->isNotEmpty()) {
                 return response()->json([
                     'tournament' => $tournament,
