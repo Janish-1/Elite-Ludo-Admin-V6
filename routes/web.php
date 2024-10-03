@@ -3,7 +3,6 @@
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Account\AccountController;
 use App\Http\Controllers\Faq\FaqController;
-use App\Http\Controllers\firebasecontroller;
 use App\Http\Controllers\Player\PlayerController;
 use App\Http\Controllers\RestApi\PaymentGateway\Razorpay\RazorpayController;
 use App\Http\Controllers\SpecialOffer\SpecialofferController;
@@ -26,10 +25,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdsController;
 use App\Http\Controllers\paymentgateway\complete;
 use App\Http\Controllers\paymentgateway\initiate;
-use App\Services\FirebaseService;
-
-$firebaseService = new FirebaseService();
-$isAppEnabled = $firebaseService->isAppEnabled();
 
 /*
 |--------------------------------------------------------------------------
@@ -41,11 +36,7 @@ $isAppEnabled = $firebaseService->isAppEnabled();
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-if ($isAppEnabled) {
     
-Route::get('/someroute', [firebasecontroller::class, 'someMethod']);
-
 Route::get('/admin', [AdminController::class, 'index']);
 
 Route::post('/admin/auth', [AdminController::class, 'auth'])->name('admin.auth');
@@ -288,5 +279,3 @@ Route::get('/razorpayform', [initiate::class, 'showPaymentForm']);
 Route::post('/payment/form', [RazorpayController::class, 'Initiate'])->name('payment.form');
 Route::get('/payment/page', [initiate::class, 'paymentPage'])->name('payment.page');
 Route::post('/paymentsuccess', [complete::class, 'completePay']);
-
-}

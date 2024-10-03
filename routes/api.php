@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\bots;
-use App\Http\Controllers\firebasecontroller;
 use Illuminate\Http\Request;
 use App\Http\Controllers\RestApi\PaymentGateway\Razorpay\RazorpayController;
 use App\Http\Controllers\Api\Player\PlayerController;
@@ -11,10 +10,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdsController;
 use App\Http\Controllers\paymentgateway\initiate;
 use App\Http\Controllers\paymentgateway\complete;
-use App\Services\FirebaseService;
-
-$firebaseService = new FirebaseService();
-$isAppEnabled = $firebaseService->isAppEnabled();
 
 /*
 |--------------------------------------------------------------------------
@@ -27,15 +22,11 @@ $isAppEnabled = $firebaseService->isAppEnabled();
 |
 */
 
-if($isAppEnabled){
 
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('/someroute', [firebasecontroller::class, 'someMethod']);
-
-Route::get('/someroute', [firebasecontroller::class, 'someMethod']);
 
 Route::post('/register', [PlayerController::class, 'CreatePlayer']);
 
@@ -174,5 +165,3 @@ Route::post('/resetbot',[bots::class,'resetbot']);
 Route::post('/deletebot',[bots::class,'removebot']);
 
 Route::post('/emptyspots',[TournamentController::class,'getTournamentDetails']);
-
-}
